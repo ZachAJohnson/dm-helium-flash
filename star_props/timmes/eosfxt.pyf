@@ -1,0 +1,2111 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module dqleg020__user__routines 
+    interface dqleg020_user_interface 
+        subroutine f(absc1,par,n,e_fval_1_er,e_deta_1_er,e_dtheta_1_er,e_deta2_1_er,e_dtheta2_1_er,e_detadtheta_1_er) ! in eosfxt.f90:dqleg020:unknown_interface
+            double precision :: absc1
+            double precision dimension(n) :: par
+            integer, optional,check(len(par)>=n),depend(par) :: n=len(par)
+            double precision :: e_fval_1_er
+            double precision :: e_deta_1_er
+            double precision :: e_dtheta_1_er
+            double precision :: e_deta2_1_er
+            double precision :: e_dtheta2_1_er
+            double precision :: e_detadtheta_1_er
+        end subroutine f
+    end interface dqleg020_user_interface
+end python module dqleg020__user__routines
+python module dqlag020__user__routines 
+    interface dqlag020_user_interface 
+        subroutine f(absc,par,n,fval,deta,dtheta,deta2,dtheta2,detadtheta) ! in eosfxt.f90:dqlag020:unknown_interface
+            double precision :: absc
+            double precision dimension(n) :: par
+            integer, optional,check(len(par)>=n),depend(par) :: n=len(par)
+            double precision :: fval
+            double precision :: deta
+            double precision :: dtheta
+            double precision :: deta2
+            double precision :: dtheta2
+            double precision :: detadtheta
+        end subroutine f
+    end interface dqlag020_user_interface
+end python module dqlag020__user__routines
+subroutine eosfxt ! in eosfxt.f90
+    double precision dimension(1000) :: pcou_row
+    double precision dimension(1000) :: dpcout_row
+    double precision dimension(1000) :: dpcoud_row
+    double precision dimension(1000) :: dpcoua_row
+    double precision dimension(1000) :: dpcouz_row
+    double precision dimension(1000) :: ecou_row
+    double precision dimension(1000) :: decout_row
+    double precision dimension(1000) :: decoud_row
+    double precision dimension(1000) :: decoua_row
+    double precision dimension(1000) :: decouz_row
+    double precision dimension(1000) :: scou_row
+    double precision dimension(1000) :: dscout_row
+    double precision dimension(1000) :: dscoud_row
+    double precision dimension(1000) :: dscoua_row
+    double precision dimension(1000) :: dscouz_row
+    double precision dimension(1000) :: plasg_row
+    double precision :: ecoul
+    double precision :: decouldd
+    double precision :: decouldt
+    double precision :: decoulda
+    double precision :: decouldz
+    double precision :: decoulddd
+    double precision :: decoulddt
+    double precision :: decouldda
+    double precision :: decoulddz
+    double precision :: decouldtt
+    double precision :: decouldta
+    double precision :: decouldtz
+    double precision :: decouldaa
+    double precision :: decouldaz
+    double precision :: decouldzz
+    double precision :: scoul
+    double precision :: dscouldd
+    double precision :: dscouldt
+    double precision :: dscoulda
+    double precision :: dscouldz
+    double precision :: dscoulddd
+    double precision :: dscoulddt
+    double precision :: dscouldda
+    double precision :: dscoulddz
+    double precision :: dscouldtt
+    double precision :: dscouldta
+    double precision :: dscouldtz
+    double precision :: dscouldaa
+    double precision :: dscouldaz
+    double precision :: dscouldzz
+    double precision dimension(1000) :: ptot_row
+    double precision dimension(1000) :: dpt_row
+    double precision dimension(1000) :: dpd_row
+    double precision dimension(1000) :: dpa_row
+    double precision dimension(1000) :: dpz_row
+    double precision dimension(1000) :: dpdd_row
+    double precision dimension(1000) :: dpdt_row
+    double precision dimension(1000) :: dpda_row
+    double precision dimension(1000) :: dpdz_row
+    double precision dimension(1000) :: dptt_row
+    double precision dimension(1000) :: dpta_row
+    double precision dimension(1000) :: dptz_row
+    double precision dimension(1000) :: dpaa_row
+    double precision dimension(1000) :: dpaz_row
+    double precision dimension(1000) :: dpzz_row
+    double precision :: pcoul
+    double precision :: dpcouldd
+    double precision :: dpcouldt
+    double precision :: dpcoulda
+    double precision :: dpcouldz
+    double precision :: dpcoulddd
+    double precision :: dpcoulddt
+    double precision :: dpcouldda
+    double precision :: dpcoulddz
+    double precision :: dpcouldtt
+    double precision :: dpcouldta
+    double precision :: dpcouldtz
+    double precision :: dpcouldaa
+    double precision :: dpcouldaz
+    double precision :: dpcouldzz
+    double precision :: plasg
+    double precision dimension(1000) :: pion_row
+    double precision dimension(1000) :: dpiont_row
+    double precision dimension(1000) :: dpiond_row
+    double precision dimension(1000) :: dpiona_row
+    double precision dimension(1000) :: dpionz_row
+    double precision dimension(1000) :: dpiondd_row
+    double precision dimension(1000) :: dpiondt_row
+    double precision dimension(1000) :: dpionda_row
+    double precision dimension(1000) :: dpiondz_row
+    double precision dimension(1000) :: dpiontt_row
+    double precision dimension(1000) :: dpionta_row
+    double precision dimension(1000) :: dpiontz_row
+    double precision dimension(1000) :: dpionaa_row
+    double precision dimension(1000) :: dpionaz_row
+    double precision dimension(1000) :: dpionzz_row
+    double precision :: xne
+    double precision :: dxnedd
+    double precision :: dxnedt
+    double precision :: dxneda
+    double precision :: dxnedz
+    double precision :: dxneddd
+    double precision :: dxneddt
+    double precision :: dxnedda
+    double precision :: dxneddz
+    double precision :: dxnedtt
+    double precision :: dxnedta
+    double precision :: dxnedtz
+    double precision :: dxnedaa
+    double precision :: dxnedaz
+    double precision :: dxnedzz
+    double precision dimension(1000) :: erad_row
+    double precision dimension(1000) :: deradt_row
+    double precision dimension(1000) :: deradd_row
+    double precision dimension(1000) :: derada_row
+    double precision dimension(1000) :: deradz_row
+    double precision dimension(1000) :: deraddd_row
+    double precision dimension(1000) :: deraddt_row
+    double precision dimension(1000) :: deradda_row
+    double precision dimension(1000) :: deraddz_row
+    double precision dimension(1000) :: deradtt_row
+    double precision dimension(1000) :: deradta_row
+    double precision dimension(1000) :: deradtz_row
+    double precision dimension(1000) :: deradaa_row
+    double precision dimension(1000) :: deradaz_row
+    double precision dimension(1000) :: deradzz_row
+    double precision :: pele
+    double precision :: dpeledd
+    double precision :: dpeledt
+    double precision :: dpeleda
+    double precision :: dpeledz
+    double precision :: dpeleddd
+    double precision :: dpeleddt
+    double precision :: dpeledda
+    double precision :: dpeleddz
+    double precision :: dpeledtt
+    double precision :: dpeledta
+    double precision :: dpeledtz
+    double precision :: dpeledaa
+    double precision :: dpeledaz
+    double precision :: dpeledzz
+    double precision :: eele
+    double precision :: deeledd
+    double precision :: deeledt
+    double precision :: deeleda
+    double precision :: deeledz
+    double precision :: deeleddd
+    double precision :: deeleddt
+    double precision :: deeledda
+    double precision :: deeleddz
+    double precision :: deeledtt
+    double precision :: deeledta
+    double precision :: deeledtz
+    double precision :: deeledaa
+    double precision :: deeledaz
+    double precision :: deeledzz
+    double precision :: sele
+    double precision :: dseledd
+    double precision :: dseledt
+    double precision :: dseleda
+    double precision :: dseledz
+    double precision :: dseleddd
+    double precision :: dseleddt
+    double precision :: dseledda
+    double precision :: dseleddz
+    double precision :: dseledtt
+    double precision :: dseledta
+    double precision :: dseledtz
+    double precision :: dseledaa
+    double precision :: dseledaz
+    double precision :: dseledzz
+    double precision dimension(1000) :: dse_row
+    double precision dimension(1000) :: dpe_row
+    double precision dimension(1000) :: dsp_row
+    double precision dimension(1000) :: etot_row
+    double precision dimension(1000) :: det_row
+    double precision dimension(1000) :: ded_row
+    double precision dimension(1000) :: dea_row
+    double precision dimension(1000) :: dez_row
+    double precision dimension(1000) :: dedd_row
+    double precision dimension(1000) :: dedt_row
+    double precision dimension(1000) :: deda_row
+    double precision dimension(1000) :: dedz_row
+    double precision dimension(1000) :: dett_row
+    double precision dimension(1000) :: deta_row
+    double precision dimension(1000) :: detz_row
+    double precision dimension(1000) :: deaa_row
+    double precision dimension(1000) :: deaz_row
+    double precision dimension(1000) :: dezz_row
+    logical :: eosfail
+    double precision :: ppos
+    double precision :: dpposdd
+    double precision :: dpposdt
+    double precision :: dpposda
+    double precision :: dpposdz
+    double precision :: dpposddd
+    double precision :: dpposddt
+    double precision :: dpposdda
+    double precision :: dpposddz
+    double precision :: dpposdtt
+    double precision :: dpposdta
+    double precision :: dpposdtz
+    double precision :: dpposdaa
+    double precision :: dpposdaz
+    double precision :: dpposdzz
+    double precision :: epos
+    double precision :: deposdd
+    double precision :: deposdt
+    double precision :: deposda
+    double precision :: deposdz
+    double precision :: deposddd
+    double precision :: deposddt
+    double precision :: deposdda
+    double precision :: deposddz
+    double precision :: deposdtt
+    double precision :: deposdta
+    double precision :: deposdtz
+    double precision :: deposdaa
+    double precision :: deposdaz
+    double precision :: deposdzz
+    double precision :: spos
+    double precision :: dsposdd
+    double precision :: dsposdt
+    double precision :: dsposda
+    double precision :: dsposdz
+    double precision :: dsposddd
+    double precision :: dsposddt
+    double precision :: dsposdda
+    double precision :: dsposddz
+    double precision :: dsposdtt
+    double precision :: dsposdta
+    double precision :: dsposdtz
+    double precision :: dsposdaa
+    double precision :: dsposdaz
+    double precision :: dsposdzz
+    double precision dimension(1000) :: xni_row
+    double precision dimension(1000) :: xnim_row
+    double precision dimension(1000) :: dxnit_row
+    double precision dimension(1000) :: dxnid_row
+    double precision dimension(1000) :: dxnia_row
+    double precision dimension(1000) :: dxniz_row
+    double precision dimension(1000) :: dxnidd_row
+    double precision dimension(1000) :: dxnidt_row
+    double precision dimension(1000) :: dxnida_row
+    double precision dimension(1000) :: dxnidz_row
+    double precision dimension(1000) :: dxnitt_row
+    double precision dimension(1000) :: dxnita_row
+    double precision dimension(1000) :: dxnitz_row
+    double precision dimension(1000) :: dxniaa_row
+    double precision dimension(1000) :: dxniaz_row
+    double precision dimension(1000) :: dxnizz_row
+    double precision dimension(1000) :: crp_row
+    double precision dimension(1000) :: dcrpt_row
+    double precision dimension(1000) :: dcrpd_row
+    double precision dimension(1000) :: dcrpa_row
+    double precision dimension(1000) :: dcrpz_row
+    double precision dimension(1000) :: dcrpdd_row
+    double precision dimension(1000) :: dcrpdt_row
+    double precision dimension(1000) :: dcrpda_row
+    double precision dimension(1000) :: dcrpdz_row
+    double precision dimension(1000) :: dcrptt_row
+    double precision dimension(1000) :: dcrpta_row
+    double precision dimension(1000) :: dcrptz_row
+    double precision dimension(1000) :: dcrpaa_row
+    double precision dimension(1000) :: dcrpaz_row
+    double precision dimension(1000) :: dcrpzz_row
+    double precision dimension(1000) :: eoswrk01
+    double precision dimension(1000) :: eoswrk02
+    double precision dimension(1000) :: eoswrk03
+    double precision dimension(1000) :: eoswrk04
+    double precision dimension(1000) :: pele_row
+    double precision dimension(1000) :: ppos_row
+    double precision dimension(1000) :: dpept_row
+    double precision dimension(1000) :: dpepd_row
+    double precision dimension(1000) :: dpepa_row
+    double precision dimension(1000) :: dpepz_row
+    double precision dimension(1000) :: dpepdd_row
+    double precision dimension(1000) :: dpepdt_row
+    double precision dimension(1000) :: dpepda_row
+    double precision dimension(1000) :: dpepdz_row
+    double precision dimension(1000) :: dpeptt_row
+    double precision dimension(1000) :: dpepta_row
+    double precision dimension(1000) :: dpeptz_row
+    double precision dimension(1000) :: dpepaa_row
+    double precision dimension(1000) :: dpepaz_row
+    double precision dimension(1000) :: dpepzz_row
+    double precision dimension(1000) :: gam1_row
+    double precision dimension(1000) :: dgam1dd_row
+    double precision dimension(1000) :: dgam1dt_row
+    double precision dimension(1000) :: dgam1da_row
+    double precision dimension(1000) :: dgam1dz_row
+    double precision dimension(1000) :: gam2_row
+    double precision dimension(1000) :: dgam2dd_row
+    double precision dimension(1000) :: dgam2dt_row
+    double precision dimension(1000) :: dgam2da_row
+    double precision dimension(1000) :: dgam2dz_row
+    double precision dimension(1000) :: gam3_row
+    double precision dimension(1000) :: dgam3dd_row
+    double precision dimension(1000) :: dgam3dt_row
+    double precision dimension(1000) :: dgam3da_row
+    double precision dimension(1000) :: dgam3dz_row
+    double precision dimension(1000) :: nabad_row
+    double precision dimension(1000) :: dnabdd_row
+    double precision dimension(1000) :: dnabdt_row
+    double precision dimension(1000) :: dnabda_row
+    double precision dimension(1000) :: dnabdz_row
+    double precision dimension(1000) :: cs_row
+    double precision dimension(1000) :: dcsdd_row
+    double precision dimension(1000) :: dcsdt_row
+    double precision dimension(1000) :: dcsda_row
+    double precision dimension(1000) :: dcsdz_row
+    double precision dimension(1000) :: xn_row
+    double precision dimension(1000) :: xp_row
+    double precision dimension(1000) :: xa_row
+    double precision dimension(1000) :: xhv_row
+    double precision dimension(1000) :: xmuhat_row
+    double precision dimension(1000) :: cp_row
+    double precision dimension(1000) :: dcpdd_row
+    double precision dimension(1000) :: dcpdt_row
+    double precision dimension(1000) :: dcpda_row
+    double precision dimension(1000) :: dcpdz_row
+    double precision dimension(1000) :: cv_row
+    double precision dimension(1000) :: dcvdd_row
+    double precision dimension(1000) :: dcvdt_row
+    double precision dimension(1000) :: dcvda_row
+    double precision dimension(1000) :: dcvdz_row
+    double precision :: xnifer
+    double precision :: dxniferdd
+    double precision :: dxniferdt
+    double precision :: dxniferda
+    double precision :: dxniferdz
+    double precision :: dxniferddd
+    double precision :: dxniferddt
+    double precision :: dxniferdda
+    double precision :: dxniferddz
+    double precision :: dxniferdtt
+    double precision :: dxniferdta
+    double precision :: dxniferdtz
+    double precision :: dxniferdaa
+    double precision :: dxniferdaz
+    double precision :: dxniferdzz
+    double precision dimension(1000) :: sgas_row
+    double precision dimension(1000) :: dsgast_row
+    double precision dimension(1000) :: dsgasd_row
+    double precision dimension(1000) :: dsgasa_row
+    double precision dimension(1000) :: dsgasz_row
+    double precision dimension(1000) :: dsgasdd_row
+    double precision dimension(1000) :: dsgasdt_row
+    double precision dimension(1000) :: dsgasda_row
+    double precision dimension(1000) :: dsgasdz_row
+    double precision dimension(1000) :: dsgastt_row
+    double precision dimension(1000) :: dsgasta_row
+    double precision dimension(1000) :: dsgastz_row
+    double precision dimension(1000) :: dsgasaa_row
+    double precision dimension(1000) :: dsgasaz_row
+    double precision dimension(1000) :: dsgaszz_row
+    double precision dimension(1000) :: sele_row
+    double precision dimension(1000) :: spos_row
+    double precision dimension(1000) :: dsept_row
+    double precision dimension(1000) :: dsepd_row
+    double precision dimension(1000) :: dsepa_row
+    double precision dimension(1000) :: dsepz_row
+    double precision dimension(1000) :: dsepdd_row
+    double precision dimension(1000) :: dsepdt_row
+    double precision dimension(1000) :: dsepda_row
+    double precision dimension(1000) :: dsepdz_row
+    double precision dimension(1000) :: dseptt_row
+    double precision dimension(1000) :: dsepta_row
+    double precision dimension(1000) :: dseptz_row
+    double precision dimension(1000) :: dsepaa_row
+    double precision dimension(1000) :: dsepaz_row
+    double precision dimension(1000) :: dsepzz_row
+    double precision :: xni
+    double precision :: dxnidd
+    double precision :: dxnidt
+    double precision :: dxnida
+    double precision :: dxnidz
+    double precision :: dxniddd
+    double precision :: dxniddt
+    double precision :: dxnidda
+    double precision :: dxniddz
+    double precision :: dxnidtt
+    double precision :: dxnidta
+    double precision :: dxnidtz
+    double precision :: dxnidaa
+    double precision :: dxnidaz
+    double precision :: dxnidzz
+    double precision :: etaion
+    double precision :: detaidd
+    double precision :: detaidt
+    double precision :: detaida
+    double precision :: detaidz
+    double precision :: detaiddd
+    double precision :: detaiddt
+    double precision :: detaidda
+    double precision :: detaiddz
+    double precision :: detaidtt
+    double precision :: detaidta
+    double precision :: detaidtz
+    double precision :: detaidaa
+    double precision :: detaidaz
+    double precision :: detaidzz
+    double precision :: pion
+    double precision :: eion
+    double precision :: sion
+    double precision :: dpiondd
+    double precision :: dpiondt
+    double precision :: dpionda
+    double precision :: dpiondz
+    double precision :: deiondd
+    double precision :: deiondt
+    double precision :: deionda
+    double precision :: deiondz
+    double precision :: dsiondd
+    double precision :: dsiondt
+    double precision :: dsionda
+    double precision :: dsiondz
+    double precision :: dpionddd
+    double precision :: dpionddt
+    double precision :: dpiondda
+    double precision :: dpionddz
+    double precision :: dpiondtt
+    double precision :: dpiondta
+    double precision :: dpiondtz
+    double precision :: dpiondaa
+    double precision :: dpiondaz
+    double precision :: dpiondzz
+    double precision :: deionddd
+    double precision :: deionddt
+    double precision :: deiondda
+    double precision :: deionddz
+    double precision :: deiondtt
+    double precision :: deiondta
+    double precision :: deiondtz
+    double precision :: deiondaa
+    double precision :: deiondaz
+    double precision :: deiondzz
+    double precision :: dsionddd
+    double precision :: dsionddt
+    double precision :: dsiondda
+    double precision :: dsionddz
+    double precision :: dsiondtt
+    double precision :: dsiondta
+    double precision :: dsiondtz
+    double precision :: dsiondaa
+    double precision :: dsiondaz
+    double precision :: dsiondzz
+    double precision dimension(1000) :: etaion_row
+    double precision dimension(1000) :: detait_row
+    double precision dimension(1000) :: detaid_row
+    double precision dimension(1000) :: detaia_row
+    double precision dimension(1000) :: detaiz_row
+    double precision dimension(1000) :: detaidd_row
+    double precision dimension(1000) :: detaidt_row
+    double precision dimension(1000) :: detaida_row
+    double precision dimension(1000) :: detaidz_row
+    double precision dimension(1000) :: detaitt_row
+    double precision dimension(1000) :: detaita_row
+    double precision dimension(1000) :: detaitz_row
+    double precision dimension(1000) :: detaiaa_row
+    double precision dimension(1000) :: detaiaz_row
+    double precision dimension(1000) :: detaizz_row
+    double precision :: pep
+    double precision :: dpepdd
+    double precision :: dpepdt
+    double precision :: dpepda
+    double precision :: dpepdz
+    double precision :: dpepddd
+    double precision :: dpepddt
+    double precision :: dpepdda
+    double precision :: dpepddz
+    double precision :: dpepdtt
+    double precision :: dpepdta
+    double precision :: dpepdtz
+    double precision :: dpepdaa
+    double precision :: dpepdaz
+    double precision :: dpepdzz
+    double precision :: eep
+    double precision :: deepdd
+    double precision :: deepdt
+    double precision :: deepda
+    double precision :: deepdz
+    double precision :: deepddd
+    double precision :: deepddt
+    double precision :: deepdda
+    double precision :: deepddz
+    double precision :: deepdtt
+    double precision :: deepdta
+    double precision :: deepdtz
+    double precision :: deepdaa
+    double precision :: deepdaz
+    double precision :: deepdzz
+    double precision :: sep
+    double precision :: dsepdd
+    double precision :: dsepdt
+    double precision :: dsepda
+    double precision :: dsepdz
+    double precision :: dsepddd
+    double precision :: dsepddt
+    double precision :: dsepdda
+    double precision :: dsepddz
+    double precision :: dsepdtt
+    double precision :: dsepdta
+    double precision :: dsepdtz
+    double precision :: dsepdaa
+    double precision :: dsepdaz
+    double precision :: dsepdzz
+    double precision dimension(1000) :: eion_row
+    double precision dimension(1000) :: deiont_row
+    double precision dimension(1000) :: deiond_row
+    double precision dimension(1000) :: deiona_row
+    double precision dimension(1000) :: deionz_row
+    double precision dimension(1000) :: deiondd_row
+    double precision dimension(1000) :: deiondt_row
+    double precision dimension(1000) :: deionda_row
+    double precision dimension(1000) :: deiondz_row
+    double precision dimension(1000) :: deiontt_row
+    double precision dimension(1000) :: deionta_row
+    double precision dimension(1000) :: deiontz_row
+    double precision dimension(1000) :: deionaa_row
+    double precision dimension(1000) :: deionaz_row
+    double precision dimension(1000) :: deionzz_row
+    double precision :: etaele
+    double precision :: detadd
+    double precision :: detadt
+    double precision :: detada
+    double precision :: detadz
+    double precision :: detaddd
+    double precision :: detaddt
+    double precision :: detadda
+    double precision :: detaddz
+    double precision :: detadtt
+    double precision :: detadta
+    double precision :: detadtz
+    double precision :: detadaa
+    double precision :: detadaz
+    double precision :: detadzz
+    double precision :: xnefer
+    double precision :: dxneferdd
+    double precision :: dxneferdt
+    double precision :: dxneferda
+    double precision :: dxneferdz
+    double precision :: dxneferddd
+    double precision :: dxneferddt
+    double precision :: dxneferdda
+    double precision :: dxneferddz
+    double precision :: dxneferdtt
+    double precision :: dxneferdta
+    double precision :: dxneferdtz
+    double precision :: dxneferdaa
+    double precision :: dxneferdaz
+    double precision :: dxneferdzz
+    double precision :: xnpfer
+    double precision :: dxnpferdd
+    double precision :: dxnpferdt
+    double precision :: dxnpferda
+    double precision :: dxnpferdz
+    double precision :: dxnpferddd
+    double precision :: dxnpferddt
+    double precision :: dxnpferdda
+    double precision :: dxnpferddz
+    double precision :: dxnpferdtt
+    double precision :: dxnpferdta
+    double precision :: dxnpferdtz
+    double precision :: dxnpferdaa
+    double precision :: dxnpferdaz
+    double precision :: dxnpferdzz
+    double precision dimension(100,1000) :: xmass_row
+    double precision dimension(100,1000) :: aion_row
+    double precision dimension(100,1000) :: zion_row
+    integer :: niso
+    double precision dimension(30,100,1000) :: frac_row
+    double precision dimension(1000) :: pgas_row
+    double precision dimension(1000) :: dpgast_row
+    double precision dimension(1000) :: dpgasd_row
+    double precision dimension(1000) :: dpgasa_row
+    double precision dimension(1000) :: dpgasz_row
+    double precision dimension(1000) :: dpgasdd_row
+    double precision dimension(1000) :: dpgasdt_row
+    double precision dimension(1000) :: dpgasda_row
+    double precision dimension(1000) :: dpgasdz_row
+    double precision dimension(1000) :: dpgastt_row
+    double precision dimension(1000) :: dpgasta_row
+    double precision dimension(1000) :: dpgastz_row
+    double precision dimension(1000) :: dpgasaa_row
+    double precision dimension(1000) :: dpgasaz_row
+    double precision dimension(1000) :: dpgaszz_row
+    double precision dimension(1000) :: sion_row
+    double precision dimension(1000) :: dsiont_row
+    double precision dimension(1000) :: dsiond_row
+    double precision dimension(1000) :: dsiona_row
+    double precision dimension(1000) :: dsionz_row
+    double precision dimension(1000) :: dsiondd_row
+    double precision dimension(1000) :: dsiondt_row
+    double precision dimension(1000) :: dsionda_row
+    double precision dimension(1000) :: dsiondz_row
+    double precision dimension(1000) :: dsiontt_row
+    double precision dimension(1000) :: dsionta_row
+    double precision dimension(1000) :: dsiontz_row
+    double precision dimension(1000) :: dsionaa_row
+    double precision dimension(1000) :: dsionaz_row
+    double precision dimension(1000) :: dsionzz_row
+    double precision dimension(1000) :: stot_row
+    double precision dimension(1000) :: dst_row
+    double precision dimension(1000) :: dsd_row
+    double precision dimension(1000) :: dsa_row
+    double precision dimension(1000) :: dsz_row
+    double precision dimension(1000) :: dsdd_row
+    double precision dimension(1000) :: dsdt_row
+    double precision dimension(1000) :: dsda_row
+    double precision dimension(1000) :: dsdz_row
+    double precision dimension(1000) :: dstt_row
+    double precision dimension(1000) :: dsta_row
+    double precision dimension(1000) :: dstz_row
+    double precision dimension(1000) :: dsaa_row
+    double precision dimension(1000) :: dsaz_row
+    double precision dimension(1000) :: dszz_row
+    double precision :: eip
+    double precision :: deipdd
+    double precision :: deipdt
+    double precision :: deipda
+    double precision :: deipdz
+    double precision :: sip
+    double precision :: dsipdd
+    double precision :: dsipdt
+    double precision :: dsipda
+    double precision :: dsipdz
+    double precision :: pip
+    double precision :: dpipdd
+    double precision :: dpipdt
+    double precision :: dpipda
+    double precision :: dpipdz
+    integer :: jlo_eos
+    integer :: jhi_eos
+    double precision :: etapos
+    double precision :: zeff
+    double precision dimension(1000) :: temp_row
+    double precision dimension(1000) :: den_row
+    double precision dimension(1000) :: abar_row
+    double precision dimension(1000) :: zbar_row
+    double precision dimension(1000) :: zeff_row
+    double precision dimension(1000) :: ye_row
+    double precision dimension(1000) :: xne_row
+    double precision dimension(1000) :: xnp_row
+    double precision dimension(1000) :: xnem_row
+    double precision dimension(1000) :: dxnet_row
+    double precision dimension(1000) :: dxned_row
+    double precision dimension(1000) :: dxnea_row
+    double precision dimension(1000) :: dxnez_row
+    double precision dimension(1000) :: dxnedd_row
+    double precision dimension(1000) :: dxnedt_row
+    double precision dimension(1000) :: dxneda_row
+    double precision dimension(1000) :: dxnedz_row
+    double precision dimension(1000) :: dxnett_row
+    double precision dimension(1000) :: dxneta_row
+    double precision dimension(1000) :: dxnetz_row
+    double precision dimension(1000) :: dxneaa_row
+    double precision dimension(1000) :: dxneaz_row
+    double precision dimension(1000) :: dxnezz_row
+    double precision dimension(1000) :: prad_row
+    double precision dimension(1000) :: dpradt_row
+    double precision dimension(1000) :: dpradd_row
+    double precision dimension(1000) :: dprada_row
+    double precision dimension(1000) :: dpradz_row
+    double precision dimension(1000) :: dpraddd_row
+    double precision dimension(1000) :: dpraddt_row
+    double precision dimension(1000) :: dpradda_row
+    double precision dimension(1000) :: dpraddz_row
+    double precision dimension(1000) :: dpradtt_row
+    double precision dimension(1000) :: dpradta_row
+    double precision dimension(1000) :: dpradtz_row
+    double precision dimension(1000) :: dpradaa_row
+    double precision dimension(1000) :: dpradaz_row
+    double precision dimension(1000) :: dpradzz_row
+    double precision dimension(1000) :: eele_row
+    double precision dimension(1000) :: epos_row
+    double precision dimension(1000) :: deept_row
+    double precision dimension(1000) :: deepd_row
+    double precision dimension(1000) :: deepa_row
+    double precision dimension(1000) :: deepz_row
+    double precision dimension(1000) :: deepdd_row
+    double precision dimension(1000) :: deepdt_row
+    double precision dimension(1000) :: deepda_row
+    double precision dimension(1000) :: deepdz_row
+    double precision dimension(1000) :: deeptt_row
+    double precision dimension(1000) :: deepta_row
+    double precision dimension(1000) :: deeptz_row
+    double precision dimension(1000) :: deepaa_row
+    double precision dimension(1000) :: deepaz_row
+    double precision dimension(1000) :: deepzz_row
+    double precision dimension(1000) :: srad_row
+    double precision dimension(1000) :: dsradt_row
+    double precision dimension(1000) :: dsradd_row
+    double precision dimension(1000) :: dsrada_row
+    double precision dimension(1000) :: dsradz_row
+    double precision dimension(1000) :: dsraddd_row
+    double precision dimension(1000) :: dsraddt_row
+    double precision dimension(1000) :: dsradda_row
+    double precision dimension(1000) :: dsraddz_row
+    double precision dimension(1000) :: dsradtt_row
+    double precision dimension(1000) :: dsradta_row
+    double precision dimension(1000) :: dsradtz_row
+    double precision dimension(1000) :: dsradaa_row
+    double precision dimension(1000) :: dsradaz_row
+    double precision dimension(1000) :: dsradzz_row
+    double precision dimension(1000) :: cp_gas_row
+    double precision dimension(1000) :: dcp_gasdd_row
+    double precision dimension(1000) :: dcp_gasdt_row
+    double precision dimension(1000) :: dcp_gasda_row
+    double precision dimension(1000) :: dcp_gasdz_row
+    double precision dimension(1000) :: cv_gas_row
+    double precision dimension(1000) :: dcv_gasdd_row
+    double precision dimension(1000) :: dcv_gasdt_row
+    double precision dimension(1000) :: dcv_gasda_row
+    double precision dimension(1000) :: dcv_gasdz_row
+    double precision dimension(1000) :: pip_row
+    double precision dimension(1000) :: dpipt_row
+    double precision dimension(1000) :: dpipd_row
+    double precision dimension(1000) :: dpipa_row
+    double precision dimension(1000) :: dpipz_row
+    double precision dimension(1000) :: eip_row
+    double precision dimension(1000) :: deipt_row
+    double precision dimension(1000) :: deipd_row
+    double precision dimension(1000) :: deipa_row
+    double precision dimension(1000) :: deipz_row
+    double precision dimension(1000) :: sip_row
+    double precision dimension(1000) :: dsipt_row
+    double precision dimension(1000) :: dsipd_row
+    double precision dimension(1000) :: dsipa_row
+    double precision dimension(1000) :: dsipz_row
+    double precision dimension(1000) :: gam1_gas_row
+    double precision dimension(1000) :: dgam1_gasdd_row
+    double precision dimension(1000) :: dgam1_gasdt_row
+    double precision dimension(1000) :: dgam1_gasda_row
+    double precision dimension(1000) :: dgam1_gasdz_row
+    double precision dimension(1000) :: gam2_gas_row
+    double precision dimension(1000) :: dgam2_gasdd_row
+    double precision dimension(1000) :: dgam2_gasdt_row
+    double precision dimension(1000) :: dgam2_gasda_row
+    double precision dimension(1000) :: dgam2_gasdz_row
+    double precision dimension(1000) :: gam3_gas_row
+    double precision dimension(1000) :: dgam3_gasdd_row
+    double precision dimension(1000) :: dgam3_gasdt_row
+    double precision dimension(1000) :: dgam3_gasda_row
+    double precision dimension(1000) :: dgam3_gasdz_row
+    double precision dimension(1000) :: nabad_gas_row
+    double precision dimension(1000) :: dnab_gasdd_row
+    double precision dimension(1000) :: dnab_gasdt_row
+    double precision dimension(1000) :: dnab_gasda_row
+    double precision dimension(1000) :: dnab_gasdz_row
+    double precision dimension(1000) :: cs_gas_row
+    double precision dimension(1000) :: dcs_gasdd_row
+    double precision dimension(1000) :: dcs_gasdt_row
+    double precision dimension(1000) :: dcs_gasda_row
+    double precision dimension(1000) :: dcs_gasdz_row
+    double precision dimension(1000) :: etaele_row
+    double precision dimension(1000) :: etapos_row
+    double precision dimension(1000) :: detat_row
+    double precision dimension(1000) :: detad_row
+    double precision dimension(1000) :: detaa_row
+    double precision dimension(1000) :: detaz_row
+    double precision dimension(1000) :: detadd_row
+    double precision dimension(1000) :: detadt_row
+    double precision dimension(1000) :: detada_row
+    double precision dimension(1000) :: detadz_row
+    double precision dimension(1000) :: detatt_row
+    double precision dimension(1000) :: detata_row
+    double precision dimension(1000) :: detatz_row
+    double precision dimension(1000) :: detaaa_row
+    double precision dimension(1000) :: detaaz_row
+    double precision dimension(1000) :: detazz_row
+    double precision dimension(1000) :: egas_row
+    double precision dimension(1000) :: degast_row
+    double precision dimension(1000) :: degasd_row
+    double precision dimension(1000) :: degasa_row
+    double precision dimension(1000) :: degasz_row
+    double precision dimension(1000) :: degasdd_row
+    double precision dimension(1000) :: degasdt_row
+    double precision dimension(1000) :: degasda_row
+    double precision dimension(1000) :: degasdz_row
+    double precision dimension(1000) :: degastt_row
+    double precision dimension(1000) :: degasta_row
+    double precision dimension(1000) :: degastz_row
+    double precision dimension(1000) :: degasaa_row
+    double precision dimension(1000) :: degasaz_row
+    double precision dimension(1000) :: degaszz_row
+    common /thcou/ pcou_row,dpcout_row,dpcoud_row,dpcoua_row,dpcouz_row,ecou_row,decout_row,decoud_row,decoua_row,decouz_row,scou_row,dscout_row,dscoud_row,dscoua_row,dscouz_row,plasg_row
+    common /coulc4/ ecoul,decouldd,decouldt,decoulda,decouldz,decoulddd,decoulddt,decouldda,decoulddz,decouldtt,decouldta,decouldtz,decouldaa,decouldaz,decouldzz,scoul,dscouldd,dscouldt,dscoulda,dscouldz,dscoulddd,dscoulddt,dscouldda,dscoulddz,dscouldtt,dscouldta,dscouldtz,dscouldaa,dscouldaz,dscouldzz
+    common /ptotc1/ ptot_row,dpt_row,dpd_row,dpa_row,dpz_row,dpdd_row,dpdt_row,dpda_row,dpdz_row,dptt_row,dpta_row,dptz_row,dpaa_row,dpaz_row,dpzz_row
+    common /coulc2/ pcoul,dpcouldd,dpcouldt,dpcoulda,dpcouldz,dpcoulddd,dpcoulddt,dpcouldda,dpcoulddz,dpcouldtt,dpcouldta,dpcouldtz,dpcouldaa,dpcouldaz,dpcouldzz
+    common /coulc1/ plasg
+    common /thpion/ pion_row,dpiont_row,dpiond_row,dpiona_row,dpionz_row,dpiondd_row,dpiondt_row,dpionda_row,dpiondz_row,dpiontt_row,dpionta_row,dpiontz_row,dpionaa_row,dpionaz_row,dpionzz_row
+    common /xnec2/ xne,dxnedd,dxnedt,dxneda,dxnedz,dxneddd,dxneddt,dxnedda,dxneddz,dxnedtt,dxnedta,dxnedtz,dxnedaa,dxnedaz,dxnedzz
+    common /therad/ erad_row,deradt_row,deradd_row,derada_row,deradz_row,deraddd_row,deraddt_row,deradda_row,deraddz_row,deradtt_row,deradta_row,deradtz_row,deradaa_row,deradaz_row,deradzz_row
+    common /eleth1/ pele,dpeledd,dpeledt,dpeleda,dpeledz,dpeleddd,dpeleddt,dpeledda,dpeleddz,dpeledtt,dpeledta,dpeledtz,dpeledaa,dpeledaz,dpeledzz,eele,deeledd,deeledt,deeleda,deeledz,deeleddd,deeleddt,deeledda,deeleddz,deeledtt,deeledta,deeledtz,deeledaa,deeledaz,deeledzz,sele,dseledd,dseledt,dseleda,dseledz,dseleddd,dseleddt,dseledda,dseleddz,dseledtt,dseledta,dseledtz,dseledaa,dseledaz,dseledzz
+    common /thmax/ dse_row,dpe_row,dsp_row
+    common /etotc1/ etot_row,det_row,ded_row,dea_row,dez_row,dedd_row,dedt_row,deda_row,dedz_row,dett_row,deta_row,detz_row,deaa_row,deaz_row,dezz_row
+    common /eosfc1/ eosfail
+    common /posth1/ ppos,dpposdd,dpposdt,dpposda,dpposdz,dpposddd,dpposddt,dpposdda,dpposddz,dpposdtt,dpposdta,dpposdtz,dpposdaa,dpposdaz,dpposdzz,epos,deposdd,deposdt,deposda,deposdz,deposddd,deposddt,deposdda,deposddz,deposdtt,deposdta,deposdtz,deposdaa,deposdaz,deposdzz,spos,dsposdd,dsposdt,dsposda,dsposdz,dsposddd,dsposddt,dsposdda,dsposddz,dsposdtt,dsposdta,dsposdtz,dsposdaa,dsposdaz,dsposdzz
+    common /th_xni_ion/ xni_row,xnim_row,dxnit_row,dxnid_row,dxnia_row,dxniz_row,dxnidd_row,dxnidt_row,dxnida_row,dxnidz_row,dxnitt_row,dxnita_row,dxnitz_row,dxniaa_row,dxniaz_row,dxnizz_row
+    common /crpc1/ crp_row,dcrpt_row,dcrpd_row,dcrpa_row,dcrpz_row,dcrpdd_row,dcrpdt_row,dcrpda_row,dcrpdz_row,dcrptt_row,dcrpta_row,dcrptz_row,dcrpaa_row,dcrpaz_row,dcrpzz_row
+    common /deedoo/ eoswrk01,eoswrk02,eoswrk03,eoswrk04
+    common /thpepc1/ pele_row,ppos_row,dpept_row,dpepd_row,dpepa_row,dpepz_row,dpepdd_row,dpepdt_row,dpepda_row,dpepdz_row,dpeptt_row,dpepta_row,dpeptz_row,dpepaa_row,dpepaz_row,dpepzz_row
+    common /thdertc2/ gam1_row,dgam1dd_row,dgam1dt_row,dgam1da_row,dgam1dz_row,gam2_row,dgam2dd_row,dgam2dt_row,dgam2da_row,dgam2dz_row,gam3_row,dgam3dd_row,dgam3dt_row,dgam3da_row,dgam3dz_row,nabad_row,dnabdd_row,dnabdt_row,dnabda_row,dnabdz_row,cs_row,dcsdd_row,dcsdt_row,dcsda_row,dcsdz_row
+    common /cmpout2/ xn_row,xp_row,xa_row,xhv_row,xmuhat_row
+    common /thdertc1/ cp_row,dcpdd_row,dcpdt_row,dcpda_row,dcpdz_row,cv_row,dcvdd_row,dcvdt_row,dcvda_row,dcvdz_row
+    common /xnic3/ xnifer,dxniferdd,dxniferdt,dxniferda,dxniferdz,dxniferddd,dxniferddt,dxniferdda,dxniferddz,dxniferdtt,dxniferdta,dxniferdtz,dxniferdaa,dxniferdaz,dxniferdzz
+    common /thsgasc1/ sgas_row,dsgast_row,dsgasd_row,dsgasa_row,dsgasz_row,dsgasdd_row,dsgasdt_row,dsgasda_row,dsgasdz_row,dsgastt_row,dsgasta_row,dsgastz_row,dsgasaa_row,dsgasaz_row,dsgaszz_row
+    common /thsepc1/ sele_row,spos_row,dsept_row,dsepd_row,dsepa_row,dsepz_row,dsepdd_row,dsepdt_row,dsepda_row,dsepdz_row,dseptt_row,dsepta_row,dseptz_row,dsepaa_row,dsepaz_row,dsepzz_row
+    common /ionc2/ xni,dxnidd,dxnidt,dxnida,dxnidz,dxniddd,dxniddt,dxnidda,dxniddz,dxnidtt,dxnidta,dxnidtz,dxnidaa,dxnidaz,dxnidzz
+    common /ionc3/ etaion,detaidd,detaidt,detaida,detaidz,detaiddd,detaiddt,detaidda,detaiddz,detaidtt,detaidta,detaidtz,detaidaa,detaidaz,detaidzz
+    common /ionc1/ pion,eion,sion,dpiondd,dpiondt,dpionda,dpiondz,deiondd,deiondt,deionda,deiondz,dsiondd,dsiondt,dsionda,dsiondz,dpionddd,dpionddt,dpiondda,dpionddz,dpiondtt,dpiondta,dpiondtz,dpiondaa,dpiondaz,dpiondzz,deionddd,deionddt,deiondda,deionddz,deiondtt,deiondta,deiondtz,deiondaa,deiondaz,deiondzz,dsionddd,dsionddt,dsiondda,dsionddz,dsiondtt,dsiondta,dsiondtz,dsiondaa,dsiondaz,dsiondzz
+    common /thetaion/ etaion_row,detait_row,detaid_row,detaia_row,detaiz_row,detaidd_row,detaidt_row,detaida_row,detaidz_row,detaitt_row,detaita_row,detaitz_row,detaiaa_row,detaiaz_row,detaizz_row
+    common /epc1/ pep,dpepdd,dpepdt,dpepda,dpepdz,dpepddd,dpepddt,dpepdda,dpepddz,dpepdtt,dpepdta,dpepdtz,dpepdaa,dpepdaz,dpepdzz,eep,deepdd,deepdt,deepda,deepdz,deepddd,deepddt,deepdda,deepddz,deepdtt,deepdta,deepdtz,deepdaa,deepdaz,deepdzz,sep,dsepdd,dsepdt,dsepda,dsepdz,dsepddd,dsepddt,dsepdda,dsepddz,dsepdtt,dsepdta,dsepdtz,dsepdaa,dsepdaz,dsepdzz
+    common /theion/ eion_row,deiont_row,deiond_row,deiona_row,deionz_row,deiondd_row,deiondt_row,deionda_row,deiondz_row,deiontt_row,deionta_row,deiontz_row,deionaa_row,deionaz_row,deionzz_row
+    common /xneta/ etaele,detadd,detadt,detada,detadz,detaddd,detaddt,detadda,detaddz,detadtt,detadta,detadtz,detadaa,detadaz,detadzz
+    common /xnec3/ xnefer,dxneferdd,dxneferdt,dxneferda,dxneferdz,dxneferddd,dxneferddt,dxneferdda,dxneferddz,dxneferdtt,dxneferdta,dxneferdtz,dxneferdaa,dxneferdaz,dxneferdzz,xnpfer,dxnpferdd,dxnpferdt,dxnpferda,dxnpferdz,dxnpferddd,dxnpferddt,dxnpferdda,dxnpferddz,dxnpferdtt,dxnpferdta,dxnpferdtz,dxnpferdaa,dxnpferdaz,dxnpferdzz
+    common /cmpinp/ xmass_row,aion_row,zion_row,niso
+    common /cmpout/ frac_row
+    common /thpgasc1/ pgas_row,dpgast_row,dpgasd_row,dpgasa_row,dpgasz_row,dpgasdd_row,dpgasdt_row,dpgasda_row,dpgasdz_row,dpgastt_row,dpgasta_row,dpgastz_row,dpgasaa_row,dpgasaz_row,dpgaszz_row
+    common /thsion/ sion_row,dsiont_row,dsiond_row,dsiona_row,dsionz_row,dsiondd_row,dsiondt_row,dsionda_row,dsiondz_row,dsiontt_row,dsionta_row,dsiontz_row,dsionaa_row,dsionaz_row,dsionzz_row
+    common /stotc1/ stot_row,dst_row,dsd_row,dsa_row,dsz_row,dsdd_row,dsdt_row,dsda_row,dsdz_row,dstt_row,dsta_row,dstz_row,dsaa_row,dsaz_row,dszz_row
+    common /xnec4/ eip,deipdd,deipdt,deipda,deipdz,sip,dsipdd,dsipdt,dsipda,dsipdz,pip,dpipdd,dpipdt,dpipda,dpipdz
+    common /eosvec2/ jlo_eos,jhi_eos
+    common /xnec1/ etapos,zeff
+    common /thinp/ temp_row,den_row,abar_row,zbar_row,zeff_row,ye_row
+    common /thxnec1/ xne_row,xnp_row,xnem_row,dxnet_row,dxned_row,dxnea_row,dxnez_row,dxnedd_row,dxnedt_row,dxneda_row,dxnedz_row,dxnett_row,dxneta_row,dxnetz_row,dxneaa_row,dxneaz_row,dxnezz_row
+    common /thprad/ prad_row,dpradt_row,dpradd_row,dprada_row,dpradz_row,dpraddd_row,dpraddt_row,dpradda_row,dpraddz_row,dpradtt_row,dpradta_row,dpradtz_row,dpradaa_row,dpradaz_row,dpradzz_row
+    common /theepc1/ eele_row,epos_row,deept_row,deepd_row,deepa_row,deepz_row,deepdd_row,deepdt_row,deepda_row,deepdz_row,deeptt_row,deepta_row,deeptz_row,deepaa_row,deepaz_row,deepzz_row
+    common /thsrad/ srad_row,dsradt_row,dsradd_row,dsrada_row,dsradz_row,dsraddd_row,dsraddt_row,dsradda_row,dsraddz_row,dsradtt_row,dsradta_row,dsradtz_row,dsradaa_row,dsradaz_row,dsradzz_row
+    common /thdergc1/ cp_gas_row,dcp_gasdd_row,dcp_gasdt_row,dcp_gasda_row,dcp_gasdz_row,cv_gas_row,dcv_gasdd_row,dcv_gasdt_row,dcv_gasda_row,dcv_gasdz_row
+    common /thxip/ pip_row,dpipt_row,dpipd_row,dpipa_row,dpipz_row,eip_row,deipt_row,deipd_row,deipa_row,deipz_row,sip_row,dsipt_row,dsipd_row,dsipa_row,dsipz_row
+    common /thdergc2/ gam1_gas_row,dgam1_gasdd_row,dgam1_gasdt_row,dgam1_gasda_row,dgam1_gasdz_row,gam2_gas_row,dgam2_gasdd_row,dgam2_gasdt_row,dgam2_gasda_row,dgam2_gasdz_row,gam3_gas_row,dgam3_gasdd_row,dgam3_gasdt_row,dgam3_gasda_row,dgam3_gasdz_row,nabad_gas_row,dnab_gasdd_row,dnab_gasdt_row,dnab_gasda_row,dnab_gasdz_row,cs_gas_row,dcs_gasdd_row,dcs_gasdt_row,dcs_gasda_row,dcs_gasdz_row
+    common /etapc1/ etaele_row,etapos_row,detat_row,detad_row,detaa_row,detaz_row,detadd_row,detadt_row,detada_row,detadz_row,detatt_row,detata_row,detatz_row,detaaa_row,detaaz_row,detazz_row
+    common /thegasc2/ egas_row,degast_row,degasd_row,degasa_row,degasz_row,degasdd_row,degasdt_row,degasda_row,degasdz_row,degastt_row,degasta_row,degastz_row,degasaa_row,degasaz_row,degaszz_row
+end subroutine eosfxt
+subroutine xneroot(mode,den,temp,abar,zbar,ionized,potmult,aa,f,df) ! in eosfxt.f90
+    integer :: mode
+    double precision :: den
+    double precision :: temp
+    double precision :: abar
+    double precision :: zbar
+    integer :: ionized
+    integer :: potmult
+    double precision :: aa
+    double precision :: f
+    double precision :: df
+    double precision :: ppos
+    double precision :: dpposdd
+    double precision :: dpposdt
+    double precision :: dpposda
+    double precision :: dpposdz
+    double precision :: dpposddd
+    double precision :: dpposddt
+    double precision :: dpposdda
+    double precision :: dpposddz
+    double precision :: dpposdtt
+    double precision :: dpposdta
+    double precision :: dpposdtz
+    double precision :: dpposdaa
+    double precision :: dpposdaz
+    double precision :: dpposdzz
+    double precision :: epos
+    double precision :: deposdd
+    double precision :: deposdt
+    double precision :: deposda
+    double precision :: deposdz
+    double precision :: deposddd
+    double precision :: deposddt
+    double precision :: deposdda
+    double precision :: deposddz
+    double precision :: deposdtt
+    double precision :: deposdta
+    double precision :: deposdtz
+    double precision :: deposdaa
+    double precision :: deposdaz
+    double precision :: deposdzz
+    double precision :: spos
+    double precision :: dsposdd
+    double precision :: dsposdt
+    double precision :: dsposda
+    double precision :: dsposdz
+    double precision :: dsposddd
+    double precision :: dsposddt
+    double precision :: dsposdda
+    double precision :: dsposddz
+    double precision :: dsposdtt
+    double precision :: dsposdta
+    double precision :: dsposdtz
+    double precision :: dsposdaa
+    double precision :: dsposdaz
+    double precision :: dsposdzz
+    double precision :: eip
+    double precision :: deipdd
+    double precision :: deipdt
+    double precision :: deipda
+    double precision :: deipdz
+    double precision :: sip
+    double precision :: dsipdd
+    double precision :: dsipdt
+    double precision :: dsipda
+    double precision :: dsipdz
+    double precision :: pip
+    double precision :: dpipdd
+    double precision :: dpipdt
+    double precision :: dpipda
+    double precision :: dpipdz
+    double precision :: xnefer
+    double precision :: dxneferdd
+    double precision :: dxneferdt
+    double precision :: dxneferda
+    double precision :: dxneferdz
+    double precision :: dxneferddd
+    double precision :: dxneferddt
+    double precision :: dxneferdda
+    double precision :: dxneferddz
+    double precision :: dxneferdtt
+    double precision :: dxneferdta
+    double precision :: dxneferdtz
+    double precision :: dxneferdaa
+    double precision :: dxneferdaz
+    double precision :: dxneferdzz
+    double precision :: xnpfer
+    double precision :: dxnpferdd
+    double precision :: dxnpferdt
+    double precision :: dxnpferda
+    double precision :: dxnpferdz
+    double precision :: dxnpferddd
+    double precision :: dxnpferddt
+    double precision :: dxnpferdda
+    double precision :: dxnpferddz
+    double precision :: dxnpferdtt
+    double precision :: dxnpferdta
+    double precision :: dxnpferdtz
+    double precision :: dxnpferdaa
+    double precision :: dxnpferdaz
+    double precision :: dxnpferdzz
+    double precision :: xne
+    double precision :: dxnedd
+    double precision :: dxnedt
+    double precision :: dxneda
+    double precision :: dxnedz
+    double precision :: dxneddd
+    double precision :: dxneddt
+    double precision :: dxnedda
+    double precision :: dxneddz
+    double precision :: dxnedtt
+    double precision :: dxnedta
+    double precision :: dxnedtz
+    double precision :: dxnedaa
+    double precision :: dxnedaz
+    double precision :: dxnedzz
+    double precision :: etapos
+    double precision :: zeff
+    double precision :: pep
+    double precision :: dpepdd
+    double precision :: dpepdt
+    double precision :: dpepda
+    double precision :: dpepdz
+    double precision :: dpepddd
+    double precision :: dpepddt
+    double precision :: dpepdda
+    double precision :: dpepddz
+    double precision :: dpepdtt
+    double precision :: dpepdta
+    double precision :: dpepdtz
+    double precision :: dpepdaa
+    double precision :: dpepdaz
+    double precision :: dpepdzz
+    double precision :: eep
+    double precision :: deepdd
+    double precision :: deepdt
+    double precision :: deepda
+    double precision :: deepdz
+    double precision :: deepddd
+    double precision :: deepddt
+    double precision :: deepdda
+    double precision :: deepddz
+    double precision :: deepdtt
+    double precision :: deepdta
+    double precision :: deepdtz
+    double precision :: deepdaa
+    double precision :: deepdaz
+    double precision :: deepdzz
+    double precision :: sep
+    double precision :: dsepdd
+    double precision :: dsepdt
+    double precision :: dsepda
+    double precision :: dsepdz
+    double precision :: dsepddd
+    double precision :: dsepddt
+    double precision :: dsepdda
+    double precision :: dsepddz
+    double precision :: dsepdtt
+    double precision :: dsepdta
+    double precision :: dsepdtz
+    double precision :: dsepdaa
+    double precision :: dsepdaz
+    double precision :: dsepdzz
+    double precision :: etaele
+    double precision :: detadd
+    double precision :: detadt
+    double precision :: detada
+    double precision :: detadz
+    double precision :: detaddd
+    double precision :: detaddt
+    double precision :: detadda
+    double precision :: detaddz
+    double precision :: detadtt
+    double precision :: detadta
+    double precision :: detadtz
+    double precision :: detadaa
+    double precision :: detadaz
+    double precision :: detadzz
+    double precision :: pele
+    double precision :: dpeledd
+    double precision :: dpeledt
+    double precision :: dpeleda
+    double precision :: dpeledz
+    double precision :: dpeleddd
+    double precision :: dpeleddt
+    double precision :: dpeledda
+    double precision :: dpeleddz
+    double precision :: dpeledtt
+    double precision :: dpeledta
+    double precision :: dpeledtz
+    double precision :: dpeledaa
+    double precision :: dpeledaz
+    double precision :: dpeledzz
+    double precision :: eele
+    double precision :: deeledd
+    double precision :: deeledt
+    double precision :: deeleda
+    double precision :: deeledz
+    double precision :: deeleddd
+    double precision :: deeleddt
+    double precision :: deeledda
+    double precision :: deeleddz
+    double precision :: deeledtt
+    double precision :: deeledta
+    double precision :: deeledtz
+    double precision :: deeledaa
+    double precision :: deeledaz
+    double precision :: deeledzz
+    double precision :: sele
+    double precision :: dseledd
+    double precision :: dseledt
+    double precision :: dseleda
+    double precision :: dseledz
+    double precision :: dseleddd
+    double precision :: dseleddt
+    double precision :: dseledda
+    double precision :: dseleddz
+    double precision :: dseledtt
+    double precision :: dseledta
+    double precision :: dseledtz
+    double precision :: dseledaa
+    double precision :: dseledaz
+    double precision :: dseledzz
+    common /posth1/ ppos,dpposdd,dpposdt,dpposda,dpposdz,dpposddd,dpposddt,dpposdda,dpposddz,dpposdtt,dpposdta,dpposdtz,dpposdaa,dpposdaz,dpposdzz,epos,deposdd,deposdt,deposda,deposdz,deposddd,deposddt,deposdda,deposddz,deposdtt,deposdta,deposdtz,deposdaa,deposdaz,deposdzz,spos,dsposdd,dsposdt,dsposda,dsposdz,dsposddd,dsposddt,dsposdda,dsposddz,dsposdtt,dsposdta,dsposdtz,dsposdaa,dsposdaz,dsposdzz
+    common /xnec4/ eip,deipdd,deipdt,deipda,deipdz,sip,dsipdd,dsipdt,dsipda,dsipdz,pip,dpipdd,dpipdt,dpipda,dpipdz
+    common /xnec3/ xnefer,dxneferdd,dxneferdt,dxneferda,dxneferdz,dxneferddd,dxneferddt,dxneferdda,dxneferddz,dxneferdtt,dxneferdta,dxneferdtz,dxneferdaa,dxneferdaz,dxneferdzz,xnpfer,dxnpferdd,dxnpferdt,dxnpferda,dxnpferdz,dxnpferddd,dxnpferddt,dxnpferdda,dxnpferddz,dxnpferdtt,dxnpferdta,dxnpferdtz,dxnpferdaa,dxnpferdaz,dxnpferdzz
+    common /xnec2/ xne,dxnedd,dxnedt,dxneda,dxnedz,dxneddd,dxneddt,dxnedda,dxneddz,dxnedtt,dxnedta,dxnedtz,dxnedaa,dxnedaz,dxnedzz
+    common /xnec1/ etapos,zeff
+    common /epc1/ pep,dpepdd,dpepdt,dpepda,dpepdz,dpepddd,dpepddt,dpepdda,dpepddz,dpepdtt,dpepdta,dpepdtz,dpepdaa,dpepdaz,dpepdzz,eep,deepdd,deepdt,deepda,deepdz,deepddd,deepddt,deepdda,deepddz,deepdtt,deepdta,deepdtz,deepdaa,deepdaz,deepdzz,sep,dsepdd,dsepdt,dsepda,dsepdz,dsepddd,dsepddt,dsepdda,dsepddz,dsepdtt,dsepdta,dsepdtz,dsepdaa,dsepdaz,dsepdzz
+    common /xneta/ etaele,detadd,detadt,detada,detadz,detaddd,detaddt,detadda,detaddz,detadtt,detadta,detadtz,detadaa,detadaz,detadzz
+    common /eleth1/ pele,dpeledd,dpeledt,dpeleda,dpeledz,dpeleddd,dpeleddt,dpeledda,dpeleddz,dpeledtt,dpeledta,dpeledtz,dpeledaa,dpeledaz,dpeledzz,eele,deeledd,deeledt,deeleda,deeledz,deeleddd,deeleddt,deeledda,deeleddz,deeledtt,deeledta,deeledtz,deeledaa,deeledaz,deeledzz,sele,dseledd,dseledt,dseleda,dseledz,dseleddd,dseleddt,dseledda,dseleddz,dseledtt,dseledta,dseledtz,dseledaa,dseledaz,dseledzz
+end subroutine xneroot
+subroutine etages(xni,zbar,temp,eta) ! in eosfxt.f90
+    double precision :: xni
+    double precision :: zbar
+    double precision :: temp
+    double precision :: eta
+end subroutine etages
+subroutine zero_eos_vector(jlo,jhi) ! in eosfxt.f90
+    integer :: jlo
+    integer :: jhi
+    double precision dimension(1000) :: pcou_row
+    double precision dimension(1000) :: dpcout_row
+    double precision dimension(1000) :: dpcoud_row
+    double precision dimension(1000) :: dpcoua_row
+    double precision dimension(1000) :: dpcouz_row
+    double precision dimension(1000) :: ecou_row
+    double precision dimension(1000) :: decout_row
+    double precision dimension(1000) :: decoud_row
+    double precision dimension(1000) :: decoua_row
+    double precision dimension(1000) :: decouz_row
+    double precision dimension(1000) :: scou_row
+    double precision dimension(1000) :: dscout_row
+    double precision dimension(1000) :: dscoud_row
+    double precision dimension(1000) :: dscoua_row
+    double precision dimension(1000) :: dscouz_row
+    double precision dimension(1000) :: plasg_row
+    double precision dimension(1000) :: ptot_row
+    double precision dimension(1000) :: dpt_row
+    double precision dimension(1000) :: dpd_row
+    double precision dimension(1000) :: dpa_row
+    double precision dimension(1000) :: dpz_row
+    double precision dimension(1000) :: dpdd_row
+    double precision dimension(1000) :: dpdt_row
+    double precision dimension(1000) :: dpda_row
+    double precision dimension(1000) :: dpdz_row
+    double precision dimension(1000) :: dptt_row
+    double precision dimension(1000) :: dpta_row
+    double precision dimension(1000) :: dptz_row
+    double precision dimension(1000) :: dpaa_row
+    double precision dimension(1000) :: dpaz_row
+    double precision dimension(1000) :: dpzz_row
+    double precision dimension(1000) :: pion_row
+    double precision dimension(1000) :: dpiont_row
+    double precision dimension(1000) :: dpiond_row
+    double precision dimension(1000) :: dpiona_row
+    double precision dimension(1000) :: dpionz_row
+    double precision dimension(1000) :: dpiondd_row
+    double precision dimension(1000) :: dpiondt_row
+    double precision dimension(1000) :: dpionda_row
+    double precision dimension(1000) :: dpiondz_row
+    double precision dimension(1000) :: dpiontt_row
+    double precision dimension(1000) :: dpionta_row
+    double precision dimension(1000) :: dpiontz_row
+    double precision dimension(1000) :: dpionaa_row
+    double precision dimension(1000) :: dpionaz_row
+    double precision dimension(1000) :: dpionzz_row
+    double precision dimension(1000) :: erad_row
+    double precision dimension(1000) :: deradt_row
+    double precision dimension(1000) :: deradd_row
+    double precision dimension(1000) :: derada_row
+    double precision dimension(1000) :: deradz_row
+    double precision dimension(1000) :: deraddd_row
+    double precision dimension(1000) :: deraddt_row
+    double precision dimension(1000) :: deradda_row
+    double precision dimension(1000) :: deraddz_row
+    double precision dimension(1000) :: deradtt_row
+    double precision dimension(1000) :: deradta_row
+    double precision dimension(1000) :: deradtz_row
+    double precision dimension(1000) :: deradaa_row
+    double precision dimension(1000) :: deradaz_row
+    double precision dimension(1000) :: deradzz_row
+    double precision dimension(1000) :: dse_row
+    double precision dimension(1000) :: dpe_row
+    double precision dimension(1000) :: dsp_row
+    double precision dimension(1000) :: etot_row
+    double precision dimension(1000) :: det_row
+    double precision dimension(1000) :: ded_row
+    double precision dimension(1000) :: dea_row
+    double precision dimension(1000) :: dez_row
+    double precision dimension(1000) :: dedd_row
+    double precision dimension(1000) :: dedt_row
+    double precision dimension(1000) :: deda_row
+    double precision dimension(1000) :: dedz_row
+    double precision dimension(1000) :: dett_row
+    double precision dimension(1000) :: deta_row
+    double precision dimension(1000) :: detz_row
+    double precision dimension(1000) :: deaa_row
+    double precision dimension(1000) :: deaz_row
+    double precision dimension(1000) :: dezz_row
+    logical :: eosfail
+    double precision dimension(1000) :: xni_row
+    double precision dimension(1000) :: xnim_row
+    double precision dimension(1000) :: dxnit_row
+    double precision dimension(1000) :: dxnid_row
+    double precision dimension(1000) :: dxnia_row
+    double precision dimension(1000) :: dxniz_row
+    double precision dimension(1000) :: dxnidd_row
+    double precision dimension(1000) :: dxnidt_row
+    double precision dimension(1000) :: dxnida_row
+    double precision dimension(1000) :: dxnidz_row
+    double precision dimension(1000) :: dxnitt_row
+    double precision dimension(1000) :: dxnita_row
+    double precision dimension(1000) :: dxnitz_row
+    double precision dimension(1000) :: dxniaa_row
+    double precision dimension(1000) :: dxniaz_row
+    double precision dimension(1000) :: dxnizz_row
+    double precision dimension(1000) :: crp_row
+    double precision dimension(1000) :: dcrpt_row
+    double precision dimension(1000) :: dcrpd_row
+    double precision dimension(1000) :: dcrpa_row
+    double precision dimension(1000) :: dcrpz_row
+    double precision dimension(1000) :: dcrpdd_row
+    double precision dimension(1000) :: dcrpdt_row
+    double precision dimension(1000) :: dcrpda_row
+    double precision dimension(1000) :: dcrpdz_row
+    double precision dimension(1000) :: dcrptt_row
+    double precision dimension(1000) :: dcrpta_row
+    double precision dimension(1000) :: dcrptz_row
+    double precision dimension(1000) :: dcrpaa_row
+    double precision dimension(1000) :: dcrpaz_row
+    double precision dimension(1000) :: dcrpzz_row
+    double precision dimension(1000) :: eoswrk01
+    double precision dimension(1000) :: eoswrk02
+    double precision dimension(1000) :: eoswrk03
+    double precision dimension(1000) :: eoswrk04
+    double precision dimension(1000) :: pele_row
+    double precision dimension(1000) :: ppos_row
+    double precision dimension(1000) :: dpept_row
+    double precision dimension(1000) :: dpepd_row
+    double precision dimension(1000) :: dpepa_row
+    double precision dimension(1000) :: dpepz_row
+    double precision dimension(1000) :: dpepdd_row
+    double precision dimension(1000) :: dpepdt_row
+    double precision dimension(1000) :: dpepda_row
+    double precision dimension(1000) :: dpepdz_row
+    double precision dimension(1000) :: dpeptt_row
+    double precision dimension(1000) :: dpepta_row
+    double precision dimension(1000) :: dpeptz_row
+    double precision dimension(1000) :: dpepaa_row
+    double precision dimension(1000) :: dpepaz_row
+    double precision dimension(1000) :: dpepzz_row
+    double precision dimension(1000) :: gam1_row
+    double precision dimension(1000) :: dgam1dd_row
+    double precision dimension(1000) :: dgam1dt_row
+    double precision dimension(1000) :: dgam1da_row
+    double precision dimension(1000) :: dgam1dz_row
+    double precision dimension(1000) :: gam2_row
+    double precision dimension(1000) :: dgam2dd_row
+    double precision dimension(1000) :: dgam2dt_row
+    double precision dimension(1000) :: dgam2da_row
+    double precision dimension(1000) :: dgam2dz_row
+    double precision dimension(1000) :: gam3_row
+    double precision dimension(1000) :: dgam3dd_row
+    double precision dimension(1000) :: dgam3dt_row
+    double precision dimension(1000) :: dgam3da_row
+    double precision dimension(1000) :: dgam3dz_row
+    double precision dimension(1000) :: nabad_row
+    double precision dimension(1000) :: dnabdd_row
+    double precision dimension(1000) :: dnabdt_row
+    double precision dimension(1000) :: dnabda_row
+    double precision dimension(1000) :: dnabdz_row
+    double precision dimension(1000) :: cs_row
+    double precision dimension(1000) :: dcsdd_row
+    double precision dimension(1000) :: dcsdt_row
+    double precision dimension(1000) :: dcsda_row
+    double precision dimension(1000) :: dcsdz_row
+    double precision dimension(1000) :: xn_row
+    double precision dimension(1000) :: xp_row
+    double precision dimension(1000) :: xa_row
+    double precision dimension(1000) :: xhv_row
+    double precision dimension(1000) :: xmuhat_row
+    double precision dimension(1000) :: cp_row
+    double precision dimension(1000) :: dcpdd_row
+    double precision dimension(1000) :: dcpdt_row
+    double precision dimension(1000) :: dcpda_row
+    double precision dimension(1000) :: dcpdz_row
+    double precision dimension(1000) :: cv_row
+    double precision dimension(1000) :: dcvdd_row
+    double precision dimension(1000) :: dcvdt_row
+    double precision dimension(1000) :: dcvda_row
+    double precision dimension(1000) :: dcvdz_row
+    double precision dimension(1000) :: sgas_row
+    double precision dimension(1000) :: dsgast_row
+    double precision dimension(1000) :: dsgasd_row
+    double precision dimension(1000) :: dsgasa_row
+    double precision dimension(1000) :: dsgasz_row
+    double precision dimension(1000) :: dsgasdd_row
+    double precision dimension(1000) :: dsgasdt_row
+    double precision dimension(1000) :: dsgasda_row
+    double precision dimension(1000) :: dsgasdz_row
+    double precision dimension(1000) :: dsgastt_row
+    double precision dimension(1000) :: dsgasta_row
+    double precision dimension(1000) :: dsgastz_row
+    double precision dimension(1000) :: dsgasaa_row
+    double precision dimension(1000) :: dsgasaz_row
+    double precision dimension(1000) :: dsgaszz_row
+    double precision dimension(1000) :: sele_row
+    double precision dimension(1000) :: spos_row
+    double precision dimension(1000) :: dsept_row
+    double precision dimension(1000) :: dsepd_row
+    double precision dimension(1000) :: dsepa_row
+    double precision dimension(1000) :: dsepz_row
+    double precision dimension(1000) :: dsepdd_row
+    double precision dimension(1000) :: dsepdt_row
+    double precision dimension(1000) :: dsepda_row
+    double precision dimension(1000) :: dsepdz_row
+    double precision dimension(1000) :: dseptt_row
+    double precision dimension(1000) :: dsepta_row
+    double precision dimension(1000) :: dseptz_row
+    double precision dimension(1000) :: dsepaa_row
+    double precision dimension(1000) :: dsepaz_row
+    double precision dimension(1000) :: dsepzz_row
+    double precision dimension(1000) :: etaion_row
+    double precision dimension(1000) :: detait_row
+    double precision dimension(1000) :: detaid_row
+    double precision dimension(1000) :: detaia_row
+    double precision dimension(1000) :: detaiz_row
+    double precision dimension(1000) :: detaidd_row
+    double precision dimension(1000) :: detaidt_row
+    double precision dimension(1000) :: detaida_row
+    double precision dimension(1000) :: detaidz_row
+    double precision dimension(1000) :: detaitt_row
+    double precision dimension(1000) :: detaita_row
+    double precision dimension(1000) :: detaitz_row
+    double precision dimension(1000) :: detaiaa_row
+    double precision dimension(1000) :: detaiaz_row
+    double precision dimension(1000) :: detaizz_row
+    double precision dimension(1000) :: eion_row
+    double precision dimension(1000) :: deiont_row
+    double precision dimension(1000) :: deiond_row
+    double precision dimension(1000) :: deiona_row
+    double precision dimension(1000) :: deionz_row
+    double precision dimension(1000) :: deiondd_row
+    double precision dimension(1000) :: deiondt_row
+    double precision dimension(1000) :: deionda_row
+    double precision dimension(1000) :: deiondz_row
+    double precision dimension(1000) :: deiontt_row
+    double precision dimension(1000) :: deionta_row
+    double precision dimension(1000) :: deiontz_row
+    double precision dimension(1000) :: deionaa_row
+    double precision dimension(1000) :: deionaz_row
+    double precision dimension(1000) :: deionzz_row
+    double precision dimension(100,1000) :: xmass_row
+    double precision dimension(100,1000) :: aion_row
+    double precision dimension(100,1000) :: zion_row
+    integer :: niso
+    double precision dimension(30,100,1000) :: frac_row
+    double precision dimension(1000) :: pgas_row
+    double precision dimension(1000) :: dpgast_row
+    double precision dimension(1000) :: dpgasd_row
+    double precision dimension(1000) :: dpgasa_row
+    double precision dimension(1000) :: dpgasz_row
+    double precision dimension(1000) :: dpgasdd_row
+    double precision dimension(1000) :: dpgasdt_row
+    double precision dimension(1000) :: dpgasda_row
+    double precision dimension(1000) :: dpgasdz_row
+    double precision dimension(1000) :: dpgastt_row
+    double precision dimension(1000) :: dpgasta_row
+    double precision dimension(1000) :: dpgastz_row
+    double precision dimension(1000) :: dpgasaa_row
+    double precision dimension(1000) :: dpgasaz_row
+    double precision dimension(1000) :: dpgaszz_row
+    double precision dimension(1000) :: sion_row
+    double precision dimension(1000) :: dsiont_row
+    double precision dimension(1000) :: dsiond_row
+    double precision dimension(1000) :: dsiona_row
+    double precision dimension(1000) :: dsionz_row
+    double precision dimension(1000) :: dsiondd_row
+    double precision dimension(1000) :: dsiondt_row
+    double precision dimension(1000) :: dsionda_row
+    double precision dimension(1000) :: dsiondz_row
+    double precision dimension(1000) :: dsiontt_row
+    double precision dimension(1000) :: dsionta_row
+    double precision dimension(1000) :: dsiontz_row
+    double precision dimension(1000) :: dsionaa_row
+    double precision dimension(1000) :: dsionaz_row
+    double precision dimension(1000) :: dsionzz_row
+    double precision dimension(1000) :: stot_row
+    double precision dimension(1000) :: dst_row
+    double precision dimension(1000) :: dsd_row
+    double precision dimension(1000) :: dsa_row
+    double precision dimension(1000) :: dsz_row
+    double precision dimension(1000) :: dsdd_row
+    double precision dimension(1000) :: dsdt_row
+    double precision dimension(1000) :: dsda_row
+    double precision dimension(1000) :: dsdz_row
+    double precision dimension(1000) :: dstt_row
+    double precision dimension(1000) :: dsta_row
+    double precision dimension(1000) :: dstz_row
+    double precision dimension(1000) :: dsaa_row
+    double precision dimension(1000) :: dsaz_row
+    double precision dimension(1000) :: dszz_row
+    integer :: jlo_eos
+    integer :: jhi_eos
+    double precision dimension(1000) :: temp_row
+    double precision dimension(1000) :: den_row
+    double precision dimension(1000) :: abar_row
+    double precision dimension(1000) :: zbar_row
+    double precision dimension(1000) :: zeff_row
+    double precision dimension(1000) :: ye_row
+    double precision dimension(1000) :: xne_row
+    double precision dimension(1000) :: xnp_row
+    double precision dimension(1000) :: xnem_row
+    double precision dimension(1000) :: dxnet_row
+    double precision dimension(1000) :: dxned_row
+    double precision dimension(1000) :: dxnea_row
+    double precision dimension(1000) :: dxnez_row
+    double precision dimension(1000) :: dxnedd_row
+    double precision dimension(1000) :: dxnedt_row
+    double precision dimension(1000) :: dxneda_row
+    double precision dimension(1000) :: dxnedz_row
+    double precision dimension(1000) :: dxnett_row
+    double precision dimension(1000) :: dxneta_row
+    double precision dimension(1000) :: dxnetz_row
+    double precision dimension(1000) :: dxneaa_row
+    double precision dimension(1000) :: dxneaz_row
+    double precision dimension(1000) :: dxnezz_row
+    double precision dimension(1000) :: prad_row
+    double precision dimension(1000) :: dpradt_row
+    double precision dimension(1000) :: dpradd_row
+    double precision dimension(1000) :: dprada_row
+    double precision dimension(1000) :: dpradz_row
+    double precision dimension(1000) :: dpraddd_row
+    double precision dimension(1000) :: dpraddt_row
+    double precision dimension(1000) :: dpradda_row
+    double precision dimension(1000) :: dpraddz_row
+    double precision dimension(1000) :: dpradtt_row
+    double precision dimension(1000) :: dpradta_row
+    double precision dimension(1000) :: dpradtz_row
+    double precision dimension(1000) :: dpradaa_row
+    double precision dimension(1000) :: dpradaz_row
+    double precision dimension(1000) :: dpradzz_row
+    double precision dimension(1000) :: eele_row
+    double precision dimension(1000) :: epos_row
+    double precision dimension(1000) :: deept_row
+    double precision dimension(1000) :: deepd_row
+    double precision dimension(1000) :: deepa_row
+    double precision dimension(1000) :: deepz_row
+    double precision dimension(1000) :: deepdd_row
+    double precision dimension(1000) :: deepdt_row
+    double precision dimension(1000) :: deepda_row
+    double precision dimension(1000) :: deepdz_row
+    double precision dimension(1000) :: deeptt_row
+    double precision dimension(1000) :: deepta_row
+    double precision dimension(1000) :: deeptz_row
+    double precision dimension(1000) :: deepaa_row
+    double precision dimension(1000) :: deepaz_row
+    double precision dimension(1000) :: deepzz_row
+    double precision dimension(1000) :: srad_row
+    double precision dimension(1000) :: dsradt_row
+    double precision dimension(1000) :: dsradd_row
+    double precision dimension(1000) :: dsrada_row
+    double precision dimension(1000) :: dsradz_row
+    double precision dimension(1000) :: dsraddd_row
+    double precision dimension(1000) :: dsraddt_row
+    double precision dimension(1000) :: dsradda_row
+    double precision dimension(1000) :: dsraddz_row
+    double precision dimension(1000) :: dsradtt_row
+    double precision dimension(1000) :: dsradta_row
+    double precision dimension(1000) :: dsradtz_row
+    double precision dimension(1000) :: dsradaa_row
+    double precision dimension(1000) :: dsradaz_row
+    double precision dimension(1000) :: dsradzz_row
+    double precision dimension(1000) :: cp_gas_row
+    double precision dimension(1000) :: dcp_gasdd_row
+    double precision dimension(1000) :: dcp_gasdt_row
+    double precision dimension(1000) :: dcp_gasda_row
+    double precision dimension(1000) :: dcp_gasdz_row
+    double precision dimension(1000) :: cv_gas_row
+    double precision dimension(1000) :: dcv_gasdd_row
+    double precision dimension(1000) :: dcv_gasdt_row
+    double precision dimension(1000) :: dcv_gasda_row
+    double precision dimension(1000) :: dcv_gasdz_row
+    double precision dimension(1000) :: pip_row
+    double precision dimension(1000) :: dpipt_row
+    double precision dimension(1000) :: dpipd_row
+    double precision dimension(1000) :: dpipa_row
+    double precision dimension(1000) :: dpipz_row
+    double precision dimension(1000) :: eip_row
+    double precision dimension(1000) :: deipt_row
+    double precision dimension(1000) :: deipd_row
+    double precision dimension(1000) :: deipa_row
+    double precision dimension(1000) :: deipz_row
+    double precision dimension(1000) :: sip_row
+    double precision dimension(1000) :: dsipt_row
+    double precision dimension(1000) :: dsipd_row
+    double precision dimension(1000) :: dsipa_row
+    double precision dimension(1000) :: dsipz_row
+    double precision dimension(1000) :: gam1_gas_row
+    double precision dimension(1000) :: dgam1_gasdd_row
+    double precision dimension(1000) :: dgam1_gasdt_row
+    double precision dimension(1000) :: dgam1_gasda_row
+    double precision dimension(1000) :: dgam1_gasdz_row
+    double precision dimension(1000) :: gam2_gas_row
+    double precision dimension(1000) :: dgam2_gasdd_row
+    double precision dimension(1000) :: dgam2_gasdt_row
+    double precision dimension(1000) :: dgam2_gasda_row
+    double precision dimension(1000) :: dgam2_gasdz_row
+    double precision dimension(1000) :: gam3_gas_row
+    double precision dimension(1000) :: dgam3_gasdd_row
+    double precision dimension(1000) :: dgam3_gasdt_row
+    double precision dimension(1000) :: dgam3_gasda_row
+    double precision dimension(1000) :: dgam3_gasdz_row
+    double precision dimension(1000) :: nabad_gas_row
+    double precision dimension(1000) :: dnab_gasdd_row
+    double precision dimension(1000) :: dnab_gasdt_row
+    double precision dimension(1000) :: dnab_gasda_row
+    double precision dimension(1000) :: dnab_gasdz_row
+    double precision dimension(1000) :: cs_gas_row
+    double precision dimension(1000) :: dcs_gasdd_row
+    double precision dimension(1000) :: dcs_gasdt_row
+    double precision dimension(1000) :: dcs_gasda_row
+    double precision dimension(1000) :: dcs_gasdz_row
+    double precision dimension(1000) :: etaele_row
+    double precision dimension(1000) :: etapos_row
+    double precision dimension(1000) :: detat_row
+    double precision dimension(1000) :: detad_row
+    double precision dimension(1000) :: detaa_row
+    double precision dimension(1000) :: detaz_row
+    double precision dimension(1000) :: detadd_row
+    double precision dimension(1000) :: detadt_row
+    double precision dimension(1000) :: detada_row
+    double precision dimension(1000) :: detadz_row
+    double precision dimension(1000) :: detatt_row
+    double precision dimension(1000) :: detata_row
+    double precision dimension(1000) :: detatz_row
+    double precision dimension(1000) :: detaaa_row
+    double precision dimension(1000) :: detaaz_row
+    double precision dimension(1000) :: detazz_row
+    double precision dimension(1000) :: egas_row
+    double precision dimension(1000) :: degast_row
+    double precision dimension(1000) :: degasd_row
+    double precision dimension(1000) :: degasa_row
+    double precision dimension(1000) :: degasz_row
+    double precision dimension(1000) :: degasdd_row
+    double precision dimension(1000) :: degasdt_row
+    double precision dimension(1000) :: degasda_row
+    double precision dimension(1000) :: degasdz_row
+    double precision dimension(1000) :: degastt_row
+    double precision dimension(1000) :: degasta_row
+    double precision dimension(1000) :: degastz_row
+    double precision dimension(1000) :: degasaa_row
+    double precision dimension(1000) :: degasaz_row
+    double precision dimension(1000) :: degaszz_row
+    common /thcou/ pcou_row,dpcout_row,dpcoud_row,dpcoua_row,dpcouz_row,ecou_row,decout_row,decoud_row,decoua_row,decouz_row,scou_row,dscout_row,dscoud_row,dscoua_row,dscouz_row,plasg_row
+    common /ptotc1/ ptot_row,dpt_row,dpd_row,dpa_row,dpz_row,dpdd_row,dpdt_row,dpda_row,dpdz_row,dptt_row,dpta_row,dptz_row,dpaa_row,dpaz_row,dpzz_row
+    common /thpion/ pion_row,dpiont_row,dpiond_row,dpiona_row,dpionz_row,dpiondd_row,dpiondt_row,dpionda_row,dpiondz_row,dpiontt_row,dpionta_row,dpiontz_row,dpionaa_row,dpionaz_row,dpionzz_row
+    common /therad/ erad_row,deradt_row,deradd_row,derada_row,deradz_row,deraddd_row,deraddt_row,deradda_row,deraddz_row,deradtt_row,deradta_row,deradtz_row,deradaa_row,deradaz_row,deradzz_row
+    common /thmax/ dse_row,dpe_row,dsp_row
+    common /etotc1/ etot_row,det_row,ded_row,dea_row,dez_row,dedd_row,dedt_row,deda_row,dedz_row,dett_row,deta_row,detz_row,deaa_row,deaz_row,dezz_row
+    common /eosfc1/ eosfail
+    common /th_xni_ion/ xni_row,xnim_row,dxnit_row,dxnid_row,dxnia_row,dxniz_row,dxnidd_row,dxnidt_row,dxnida_row,dxnidz_row,dxnitt_row,dxnita_row,dxnitz_row,dxniaa_row,dxniaz_row,dxnizz_row
+    common /crpc1/ crp_row,dcrpt_row,dcrpd_row,dcrpa_row,dcrpz_row,dcrpdd_row,dcrpdt_row,dcrpda_row,dcrpdz_row,dcrptt_row,dcrpta_row,dcrptz_row,dcrpaa_row,dcrpaz_row,dcrpzz_row
+    common /deedoo/ eoswrk01,eoswrk02,eoswrk03,eoswrk04
+    common /thpepc1/ pele_row,ppos_row,dpept_row,dpepd_row,dpepa_row,dpepz_row,dpepdd_row,dpepdt_row,dpepda_row,dpepdz_row,dpeptt_row,dpepta_row,dpeptz_row,dpepaa_row,dpepaz_row,dpepzz_row
+    common /thdertc2/ gam1_row,dgam1dd_row,dgam1dt_row,dgam1da_row,dgam1dz_row,gam2_row,dgam2dd_row,dgam2dt_row,dgam2da_row,dgam2dz_row,gam3_row,dgam3dd_row,dgam3dt_row,dgam3da_row,dgam3dz_row,nabad_row,dnabdd_row,dnabdt_row,dnabda_row,dnabdz_row,cs_row,dcsdd_row,dcsdt_row,dcsda_row,dcsdz_row
+    common /cmpout2/ xn_row,xp_row,xa_row,xhv_row,xmuhat_row
+    common /thdertc1/ cp_row,dcpdd_row,dcpdt_row,dcpda_row,dcpdz_row,cv_row,dcvdd_row,dcvdt_row,dcvda_row,dcvdz_row
+    common /thsgasc1/ sgas_row,dsgast_row,dsgasd_row,dsgasa_row,dsgasz_row,dsgasdd_row,dsgasdt_row,dsgasda_row,dsgasdz_row,dsgastt_row,dsgasta_row,dsgastz_row,dsgasaa_row,dsgasaz_row,dsgaszz_row
+    common /thsepc1/ sele_row,spos_row,dsept_row,dsepd_row,dsepa_row,dsepz_row,dsepdd_row,dsepdt_row,dsepda_row,dsepdz_row,dseptt_row,dsepta_row,dseptz_row,dsepaa_row,dsepaz_row,dsepzz_row
+    common /thetaion/ etaion_row,detait_row,detaid_row,detaia_row,detaiz_row,detaidd_row,detaidt_row,detaida_row,detaidz_row,detaitt_row,detaita_row,detaitz_row,detaiaa_row,detaiaz_row,detaizz_row
+    common /theion/ eion_row,deiont_row,deiond_row,deiona_row,deionz_row,deiondd_row,deiondt_row,deionda_row,deiondz_row,deiontt_row,deionta_row,deiontz_row,deionaa_row,deionaz_row,deionzz_row
+    common /cmpinp/ xmass_row,aion_row,zion_row,niso
+    common /cmpout/ frac_row
+    common /thpgasc1/ pgas_row,dpgast_row,dpgasd_row,dpgasa_row,dpgasz_row,dpgasdd_row,dpgasdt_row,dpgasda_row,dpgasdz_row,dpgastt_row,dpgasta_row,dpgastz_row,dpgasaa_row,dpgasaz_row,dpgaszz_row
+    common /thsion/ sion_row,dsiont_row,dsiond_row,dsiona_row,dsionz_row,dsiondd_row,dsiondt_row,dsionda_row,dsiondz_row,dsiontt_row,dsionta_row,dsiontz_row,dsionaa_row,dsionaz_row,dsionzz_row
+    common /stotc1/ stot_row,dst_row,dsd_row,dsa_row,dsz_row,dsdd_row,dsdt_row,dsda_row,dsdz_row,dstt_row,dsta_row,dstz_row,dsaa_row,dsaz_row,dszz_row
+    common /eosvec2/ jlo_eos,jhi_eos
+    common /thinp/ temp_row,den_row,abar_row,zbar_row,zeff_row,ye_row
+    common /thxnec1/ xne_row,xnp_row,xnem_row,dxnet_row,dxned_row,dxnea_row,dxnez_row,dxnedd_row,dxnedt_row,dxneda_row,dxnedz_row,dxnett_row,dxneta_row,dxnetz_row,dxneaa_row,dxneaz_row,dxnezz_row
+    common /thprad/ prad_row,dpradt_row,dpradd_row,dprada_row,dpradz_row,dpraddd_row,dpraddt_row,dpradda_row,dpraddz_row,dpradtt_row,dpradta_row,dpradtz_row,dpradaa_row,dpradaz_row,dpradzz_row
+    common /theepc1/ eele_row,epos_row,deept_row,deepd_row,deepa_row,deepz_row,deepdd_row,deepdt_row,deepda_row,deepdz_row,deeptt_row,deepta_row,deeptz_row,deepaa_row,deepaz_row,deepzz_row
+    common /thsrad/ srad_row,dsradt_row,dsradd_row,dsrada_row,dsradz_row,dsraddd_row,dsraddt_row,dsradda_row,dsraddz_row,dsradtt_row,dsradta_row,dsradtz_row,dsradaa_row,dsradaz_row,dsradzz_row
+    common /thdergc1/ cp_gas_row,dcp_gasdd_row,dcp_gasdt_row,dcp_gasda_row,dcp_gasdz_row,cv_gas_row,dcv_gasdd_row,dcv_gasdt_row,dcv_gasda_row,dcv_gasdz_row
+    common /thxip/ pip_row,dpipt_row,dpipd_row,dpipa_row,dpipz_row,eip_row,deipt_row,deipd_row,deipa_row,deipz_row,sip_row,dsipt_row,dsipd_row,dsipa_row,dsipz_row
+    common /thdergc2/ gam1_gas_row,dgam1_gasdd_row,dgam1_gasdt_row,dgam1_gasda_row,dgam1_gasdz_row,gam2_gas_row,dgam2_gasdd_row,dgam2_gasdt_row,dgam2_gasda_row,dgam2_gasdz_row,gam3_gas_row,dgam3_gasdd_row,dgam3_gasdt_row,dgam3_gasda_row,dgam3_gasdz_row,nabad_gas_row,dnab_gasdd_row,dnab_gasdt_row,dnab_gasda_row,dnab_gasdz_row,cs_gas_row,dcs_gasdd_row,dcs_gasdt_row,dcs_gasda_row,dcs_gasdz_row
+    common /etapc1/ etaele_row,etapos_row,detat_row,detad_row,detaa_row,detaz_row,detadd_row,detadt_row,detada_row,detadz_row,detatt_row,detata_row,detatz_row,detaaa_row,detaaz_row,detazz_row
+    common /thegasc2/ egas_row,degast_row,degasd_row,degasa_row,degasz_row,degasdd_row,degasdt_row,degasda_row,degasdz_row,degastt_row,degasta_row,degastz_row,degasaa_row,degasaz_row,degaszz_row
+end subroutine zero_eos_vector
+subroutine dfermi(dk,eta,theta,fd,fdeta,fdtheta,fdeta2,fdtheta2,fdetadtheta) ! in eosfxt.f90
+    double precision :: dk
+    double precision :: eta
+    double precision :: theta
+    double precision :: fd
+    double precision :: fdeta
+    double precision :: fdtheta
+    double precision :: fdeta2
+    double precision :: fdtheta2
+    double precision :: fdetadtheta
+end subroutine dfermi
+subroutine fdfunc1(x,par,n,fd,fdeta,fdtheta,fdeta2,fdtheta2,fdetadtheta) ! in eosfxt.f90
+    double precision :: x
+    double precision dimension(n) :: par
+    integer, optional,check(len(par)>=n),depend(par) :: n=len(par)
+    double precision :: fd
+    double precision :: fdeta
+    double precision :: fdtheta
+    double precision :: fdeta2
+    double precision :: fdtheta2
+    double precision :: fdetadtheta
+end subroutine fdfunc1
+subroutine fdfunc2(x,par,n,fd,fdeta,fdtheta,fdeta2,fdtheta2,fdetadtheta) ! in eosfxt.f90
+    double precision :: x
+    double precision dimension(n) :: par
+    integer, optional,check(len(par)>=n),depend(par) :: n=len(par)
+    double precision :: fd
+    double precision :: fdeta
+    double precision :: fdtheta
+    double precision :: fdeta2
+    double precision :: fdtheta2
+    double precision :: fdetadtheta
+end subroutine fdfunc2
+subroutine dqleg020(f,a,b,result,drdeta,drdtheta,drdeta2,drdtheta2,drdetadtheta,par,n) ! in eosfxt.f90
+    use dqleg020__user__routines
+    external f
+    double precision :: a
+    double precision :: b
+    double precision :: result
+    double precision :: drdeta
+    double precision :: drdtheta
+    double precision :: drdeta2
+    double precision :: drdtheta2
+    double precision :: drdetadtheta
+    double precision dimension(n) :: par
+    integer, optional,check(len(par)>=n),depend(par) :: n=len(par)
+end subroutine dqleg020
+subroutine dqlag020(f,a,b,result,drdeta,drdtheta,drdeta2,drdtheta2,drdetadtheta,par,n) ! in eosfxt.f90
+    use dqlag020__user__routines
+    external f
+    double precision :: a
+    double precision :: b
+    double precision :: result
+    double precision :: drdeta
+    double precision :: drdtheta
+    double precision :: drdeta2
+    double precision :: drdtheta2
+    double precision :: drdetadtheta
+    double precision dimension(n) :: par
+    integer, optional,check(len(par)>=n),depend(par) :: n=len(par)
+end subroutine dqlag020
+subroutine pretty_eos_out(whose) ! in eosfxt.f90
+    character*(*) :: whose
+    double precision dimension(1000) :: pcou_row
+    double precision dimension(1000) :: dpcout_row
+    double precision dimension(1000) :: dpcoud_row
+    double precision dimension(1000) :: dpcoua_row
+    double precision dimension(1000) :: dpcouz_row
+    double precision dimension(1000) :: ecou_row
+    double precision dimension(1000) :: decout_row
+    double precision dimension(1000) :: decoud_row
+    double precision dimension(1000) :: decoua_row
+    double precision dimension(1000) :: decouz_row
+    double precision dimension(1000) :: scou_row
+    double precision dimension(1000) :: dscout_row
+    double precision dimension(1000) :: dscoud_row
+    double precision dimension(1000) :: dscoua_row
+    double precision dimension(1000) :: dscouz_row
+    double precision dimension(1000) :: plasg_row
+    double precision dimension(1000) :: ptot_row
+    double precision dimension(1000) :: dpt_row
+    double precision dimension(1000) :: dpd_row
+    double precision dimension(1000) :: dpa_row
+    double precision dimension(1000) :: dpz_row
+    double precision dimension(1000) :: dpdd_row
+    double precision dimension(1000) :: dpdt_row
+    double precision dimension(1000) :: dpda_row
+    double precision dimension(1000) :: dpdz_row
+    double precision dimension(1000) :: dptt_row
+    double precision dimension(1000) :: dpta_row
+    double precision dimension(1000) :: dptz_row
+    double precision dimension(1000) :: dpaa_row
+    double precision dimension(1000) :: dpaz_row
+    double precision dimension(1000) :: dpzz_row
+    double precision dimension(1000) :: pion_row
+    double precision dimension(1000) :: dpiont_row
+    double precision dimension(1000) :: dpiond_row
+    double precision dimension(1000) :: dpiona_row
+    double precision dimension(1000) :: dpionz_row
+    double precision dimension(1000) :: dpiondd_row
+    double precision dimension(1000) :: dpiondt_row
+    double precision dimension(1000) :: dpionda_row
+    double precision dimension(1000) :: dpiondz_row
+    double precision dimension(1000) :: dpiontt_row
+    double precision dimension(1000) :: dpionta_row
+    double precision dimension(1000) :: dpiontz_row
+    double precision dimension(1000) :: dpionaa_row
+    double precision dimension(1000) :: dpionaz_row
+    double precision dimension(1000) :: dpionzz_row
+    double precision dimension(1000) :: erad_row
+    double precision dimension(1000) :: deradt_row
+    double precision dimension(1000) :: deradd_row
+    double precision dimension(1000) :: derada_row
+    double precision dimension(1000) :: deradz_row
+    double precision dimension(1000) :: deraddd_row
+    double precision dimension(1000) :: deraddt_row
+    double precision dimension(1000) :: deradda_row
+    double precision dimension(1000) :: deraddz_row
+    double precision dimension(1000) :: deradtt_row
+    double precision dimension(1000) :: deradta_row
+    double precision dimension(1000) :: deradtz_row
+    double precision dimension(1000) :: deradaa_row
+    double precision dimension(1000) :: deradaz_row
+    double precision dimension(1000) :: deradzz_row
+    double precision dimension(1000) :: dse_row
+    double precision dimension(1000) :: dpe_row
+    double precision dimension(1000) :: dsp_row
+    double precision dimension(1000) :: etot_row
+    double precision dimension(1000) :: det_row
+    double precision dimension(1000) :: ded_row
+    double precision dimension(1000) :: dea_row
+    double precision dimension(1000) :: dez_row
+    double precision dimension(1000) :: dedd_row
+    double precision dimension(1000) :: dedt_row
+    double precision dimension(1000) :: deda_row
+    double precision dimension(1000) :: dedz_row
+    double precision dimension(1000) :: dett_row
+    double precision dimension(1000) :: deta_row
+    double precision dimension(1000) :: detz_row
+    double precision dimension(1000) :: deaa_row
+    double precision dimension(1000) :: deaz_row
+    double precision dimension(1000) :: dezz_row
+    logical :: eosfail
+    double precision dimension(1000) :: xni_row
+    double precision dimension(1000) :: xnim_row
+    double precision dimension(1000) :: dxnit_row
+    double precision dimension(1000) :: dxnid_row
+    double precision dimension(1000) :: dxnia_row
+    double precision dimension(1000) :: dxniz_row
+    double precision dimension(1000) :: dxnidd_row
+    double precision dimension(1000) :: dxnidt_row
+    double precision dimension(1000) :: dxnida_row
+    double precision dimension(1000) :: dxnidz_row
+    double precision dimension(1000) :: dxnitt_row
+    double precision dimension(1000) :: dxnita_row
+    double precision dimension(1000) :: dxnitz_row
+    double precision dimension(1000) :: dxniaa_row
+    double precision dimension(1000) :: dxniaz_row
+    double precision dimension(1000) :: dxnizz_row
+    double precision dimension(1000) :: crp_row
+    double precision dimension(1000) :: dcrpt_row
+    double precision dimension(1000) :: dcrpd_row
+    double precision dimension(1000) :: dcrpa_row
+    double precision dimension(1000) :: dcrpz_row
+    double precision dimension(1000) :: dcrpdd_row
+    double precision dimension(1000) :: dcrpdt_row
+    double precision dimension(1000) :: dcrpda_row
+    double precision dimension(1000) :: dcrpdz_row
+    double precision dimension(1000) :: dcrptt_row
+    double precision dimension(1000) :: dcrpta_row
+    double precision dimension(1000) :: dcrptz_row
+    double precision dimension(1000) :: dcrpaa_row
+    double precision dimension(1000) :: dcrpaz_row
+    double precision dimension(1000) :: dcrpzz_row
+    double precision dimension(1000) :: eoswrk01
+    double precision dimension(1000) :: eoswrk02
+    double precision dimension(1000) :: eoswrk03
+    double precision dimension(1000) :: eoswrk04
+    double precision dimension(1000) :: pele_row
+    double precision dimension(1000) :: ppos_row
+    double precision dimension(1000) :: dpept_row
+    double precision dimension(1000) :: dpepd_row
+    double precision dimension(1000) :: dpepa_row
+    double precision dimension(1000) :: dpepz_row
+    double precision dimension(1000) :: dpepdd_row
+    double precision dimension(1000) :: dpepdt_row
+    double precision dimension(1000) :: dpepda_row
+    double precision dimension(1000) :: dpepdz_row
+    double precision dimension(1000) :: dpeptt_row
+    double precision dimension(1000) :: dpepta_row
+    double precision dimension(1000) :: dpeptz_row
+    double precision dimension(1000) :: dpepaa_row
+    double precision dimension(1000) :: dpepaz_row
+    double precision dimension(1000) :: dpepzz_row
+    double precision dimension(1000) :: gam1_row
+    double precision dimension(1000) :: dgam1dd_row
+    double precision dimension(1000) :: dgam1dt_row
+    double precision dimension(1000) :: dgam1da_row
+    double precision dimension(1000) :: dgam1dz_row
+    double precision dimension(1000) :: gam2_row
+    double precision dimension(1000) :: dgam2dd_row
+    double precision dimension(1000) :: dgam2dt_row
+    double precision dimension(1000) :: dgam2da_row
+    double precision dimension(1000) :: dgam2dz_row
+    double precision dimension(1000) :: gam3_row
+    double precision dimension(1000) :: dgam3dd_row
+    double precision dimension(1000) :: dgam3dt_row
+    double precision dimension(1000) :: dgam3da_row
+    double precision dimension(1000) :: dgam3dz_row
+    double precision dimension(1000) :: nabad_row
+    double precision dimension(1000) :: dnabdd_row
+    double precision dimension(1000) :: dnabdt_row
+    double precision dimension(1000) :: dnabda_row
+    double precision dimension(1000) :: dnabdz_row
+    double precision dimension(1000) :: cs_row
+    double precision dimension(1000) :: dcsdd_row
+    double precision dimension(1000) :: dcsdt_row
+    double precision dimension(1000) :: dcsda_row
+    double precision dimension(1000) :: dcsdz_row
+    double precision dimension(1000) :: xn_row
+    double precision dimension(1000) :: xp_row
+    double precision dimension(1000) :: xa_row
+    double precision dimension(1000) :: xhv_row
+    double precision dimension(1000) :: xmuhat_row
+    double precision dimension(1000) :: cp_row
+    double precision dimension(1000) :: dcpdd_row
+    double precision dimension(1000) :: dcpdt_row
+    double precision dimension(1000) :: dcpda_row
+    double precision dimension(1000) :: dcpdz_row
+    double precision dimension(1000) :: cv_row
+    double precision dimension(1000) :: dcvdd_row
+    double precision dimension(1000) :: dcvdt_row
+    double precision dimension(1000) :: dcvda_row
+    double precision dimension(1000) :: dcvdz_row
+    double precision dimension(1000) :: sgas_row
+    double precision dimension(1000) :: dsgast_row
+    double precision dimension(1000) :: dsgasd_row
+    double precision dimension(1000) :: dsgasa_row
+    double precision dimension(1000) :: dsgasz_row
+    double precision dimension(1000) :: dsgasdd_row
+    double precision dimension(1000) :: dsgasdt_row
+    double precision dimension(1000) :: dsgasda_row
+    double precision dimension(1000) :: dsgasdz_row
+    double precision dimension(1000) :: dsgastt_row
+    double precision dimension(1000) :: dsgasta_row
+    double precision dimension(1000) :: dsgastz_row
+    double precision dimension(1000) :: dsgasaa_row
+    double precision dimension(1000) :: dsgasaz_row
+    double precision dimension(1000) :: dsgaszz_row
+    double precision dimension(1000) :: sele_row
+    double precision dimension(1000) :: spos_row
+    double precision dimension(1000) :: dsept_row
+    double precision dimension(1000) :: dsepd_row
+    double precision dimension(1000) :: dsepa_row
+    double precision dimension(1000) :: dsepz_row
+    double precision dimension(1000) :: dsepdd_row
+    double precision dimension(1000) :: dsepdt_row
+    double precision dimension(1000) :: dsepda_row
+    double precision dimension(1000) :: dsepdz_row
+    double precision dimension(1000) :: dseptt_row
+    double precision dimension(1000) :: dsepta_row
+    double precision dimension(1000) :: dseptz_row
+    double precision dimension(1000) :: dsepaa_row
+    double precision dimension(1000) :: dsepaz_row
+    double precision dimension(1000) :: dsepzz_row
+    double precision dimension(1000) :: etaion_row
+    double precision dimension(1000) :: detait_row
+    double precision dimension(1000) :: detaid_row
+    double precision dimension(1000) :: detaia_row
+    double precision dimension(1000) :: detaiz_row
+    double precision dimension(1000) :: detaidd_row
+    double precision dimension(1000) :: detaidt_row
+    double precision dimension(1000) :: detaida_row
+    double precision dimension(1000) :: detaidz_row
+    double precision dimension(1000) :: detaitt_row
+    double precision dimension(1000) :: detaita_row
+    double precision dimension(1000) :: detaitz_row
+    double precision dimension(1000) :: detaiaa_row
+    double precision dimension(1000) :: detaiaz_row
+    double precision dimension(1000) :: detaizz_row
+    double precision dimension(1000) :: eion_row
+    double precision dimension(1000) :: deiont_row
+    double precision dimension(1000) :: deiond_row
+    double precision dimension(1000) :: deiona_row
+    double precision dimension(1000) :: deionz_row
+    double precision dimension(1000) :: deiondd_row
+    double precision dimension(1000) :: deiondt_row
+    double precision dimension(1000) :: deionda_row
+    double precision dimension(1000) :: deiondz_row
+    double precision dimension(1000) :: deiontt_row
+    double precision dimension(1000) :: deionta_row
+    double precision dimension(1000) :: deiontz_row
+    double precision dimension(1000) :: deionaa_row
+    double precision dimension(1000) :: deionaz_row
+    double precision dimension(1000) :: deionzz_row
+    double precision dimension(100,1000) :: xmass_row
+    double precision dimension(100,1000) :: aion_row
+    double precision dimension(100,1000) :: zion_row
+    integer :: niso
+    double precision dimension(30,100,1000) :: frac_row
+    double precision dimension(1000) :: pgas_row
+    double precision dimension(1000) :: dpgast_row
+    double precision dimension(1000) :: dpgasd_row
+    double precision dimension(1000) :: dpgasa_row
+    double precision dimension(1000) :: dpgasz_row
+    double precision dimension(1000) :: dpgasdd_row
+    double precision dimension(1000) :: dpgasdt_row
+    double precision dimension(1000) :: dpgasda_row
+    double precision dimension(1000) :: dpgasdz_row
+    double precision dimension(1000) :: dpgastt_row
+    double precision dimension(1000) :: dpgasta_row
+    double precision dimension(1000) :: dpgastz_row
+    double precision dimension(1000) :: dpgasaa_row
+    double precision dimension(1000) :: dpgasaz_row
+    double precision dimension(1000) :: dpgaszz_row
+    double precision dimension(1000) :: sion_row
+    double precision dimension(1000) :: dsiont_row
+    double precision dimension(1000) :: dsiond_row
+    double precision dimension(1000) :: dsiona_row
+    double precision dimension(1000) :: dsionz_row
+    double precision dimension(1000) :: dsiondd_row
+    double precision dimension(1000) :: dsiondt_row
+    double precision dimension(1000) :: dsionda_row
+    double precision dimension(1000) :: dsiondz_row
+    double precision dimension(1000) :: dsiontt_row
+    double precision dimension(1000) :: dsionta_row
+    double precision dimension(1000) :: dsiontz_row
+    double precision dimension(1000) :: dsionaa_row
+    double precision dimension(1000) :: dsionaz_row
+    double precision dimension(1000) :: dsionzz_row
+    double precision dimension(1000) :: stot_row
+    double precision dimension(1000) :: dst_row
+    double precision dimension(1000) :: dsd_row
+    double precision dimension(1000) :: dsa_row
+    double precision dimension(1000) :: dsz_row
+    double precision dimension(1000) :: dsdd_row
+    double precision dimension(1000) :: dsdt_row
+    double precision dimension(1000) :: dsda_row
+    double precision dimension(1000) :: dsdz_row
+    double precision dimension(1000) :: dstt_row
+    double precision dimension(1000) :: dsta_row
+    double precision dimension(1000) :: dstz_row
+    double precision dimension(1000) :: dsaa_row
+    double precision dimension(1000) :: dsaz_row
+    double precision dimension(1000) :: dszz_row
+    integer :: jlo_eos
+    integer :: jhi_eos
+    double precision dimension(1000) :: temp_row
+    double precision dimension(1000) :: den_row
+    double precision dimension(1000) :: abar_row
+    double precision dimension(1000) :: zbar_row
+    double precision dimension(1000) :: zeff_row
+    double precision dimension(1000) :: ye_row
+    double precision dimension(1000) :: xne_row
+    double precision dimension(1000) :: xnp_row
+    double precision dimension(1000) :: xnem_row
+    double precision dimension(1000) :: dxnet_row
+    double precision dimension(1000) :: dxned_row
+    double precision dimension(1000) :: dxnea_row
+    double precision dimension(1000) :: dxnez_row
+    double precision dimension(1000) :: dxnedd_row
+    double precision dimension(1000) :: dxnedt_row
+    double precision dimension(1000) :: dxneda_row
+    double precision dimension(1000) :: dxnedz_row
+    double precision dimension(1000) :: dxnett_row
+    double precision dimension(1000) :: dxneta_row
+    double precision dimension(1000) :: dxnetz_row
+    double precision dimension(1000) :: dxneaa_row
+    double precision dimension(1000) :: dxneaz_row
+    double precision dimension(1000) :: dxnezz_row
+    double precision dimension(1000) :: prad_row
+    double precision dimension(1000) :: dpradt_row
+    double precision dimension(1000) :: dpradd_row
+    double precision dimension(1000) :: dprada_row
+    double precision dimension(1000) :: dpradz_row
+    double precision dimension(1000) :: dpraddd_row
+    double precision dimension(1000) :: dpraddt_row
+    double precision dimension(1000) :: dpradda_row
+    double precision dimension(1000) :: dpraddz_row
+    double precision dimension(1000) :: dpradtt_row
+    double precision dimension(1000) :: dpradta_row
+    double precision dimension(1000) :: dpradtz_row
+    double precision dimension(1000) :: dpradaa_row
+    double precision dimension(1000) :: dpradaz_row
+    double precision dimension(1000) :: dpradzz_row
+    double precision dimension(1000) :: eele_row
+    double precision dimension(1000) :: epos_row
+    double precision dimension(1000) :: deept_row
+    double precision dimension(1000) :: deepd_row
+    double precision dimension(1000) :: deepa_row
+    double precision dimension(1000) :: deepz_row
+    double precision dimension(1000) :: deepdd_row
+    double precision dimension(1000) :: deepdt_row
+    double precision dimension(1000) :: deepda_row
+    double precision dimension(1000) :: deepdz_row
+    double precision dimension(1000) :: deeptt_row
+    double precision dimension(1000) :: deepta_row
+    double precision dimension(1000) :: deeptz_row
+    double precision dimension(1000) :: deepaa_row
+    double precision dimension(1000) :: deepaz_row
+    double precision dimension(1000) :: deepzz_row
+    double precision dimension(1000) :: srad_row
+    double precision dimension(1000) :: dsradt_row
+    double precision dimension(1000) :: dsradd_row
+    double precision dimension(1000) :: dsrada_row
+    double precision dimension(1000) :: dsradz_row
+    double precision dimension(1000) :: dsraddd_row
+    double precision dimension(1000) :: dsraddt_row
+    double precision dimension(1000) :: dsradda_row
+    double precision dimension(1000) :: dsraddz_row
+    double precision dimension(1000) :: dsradtt_row
+    double precision dimension(1000) :: dsradta_row
+    double precision dimension(1000) :: dsradtz_row
+    double precision dimension(1000) :: dsradaa_row
+    double precision dimension(1000) :: dsradaz_row
+    double precision dimension(1000) :: dsradzz_row
+    double precision dimension(1000) :: cp_gas_row
+    double precision dimension(1000) :: dcp_gasdd_row
+    double precision dimension(1000) :: dcp_gasdt_row
+    double precision dimension(1000) :: dcp_gasda_row
+    double precision dimension(1000) :: dcp_gasdz_row
+    double precision dimension(1000) :: cv_gas_row
+    double precision dimension(1000) :: dcv_gasdd_row
+    double precision dimension(1000) :: dcv_gasdt_row
+    double precision dimension(1000) :: dcv_gasda_row
+    double precision dimension(1000) :: dcv_gasdz_row
+    double precision dimension(1000) :: pip_row
+    double precision dimension(1000) :: dpipt_row
+    double precision dimension(1000) :: dpipd_row
+    double precision dimension(1000) :: dpipa_row
+    double precision dimension(1000) :: dpipz_row
+    double precision dimension(1000) :: eip_row
+    double precision dimension(1000) :: deipt_row
+    double precision dimension(1000) :: deipd_row
+    double precision dimension(1000) :: deipa_row
+    double precision dimension(1000) :: deipz_row
+    double precision dimension(1000) :: sip_row
+    double precision dimension(1000) :: dsipt_row
+    double precision dimension(1000) :: dsipd_row
+    double precision dimension(1000) :: dsipa_row
+    double precision dimension(1000) :: dsipz_row
+    double precision dimension(1000) :: gam1_gas_row
+    double precision dimension(1000) :: dgam1_gasdd_row
+    double precision dimension(1000) :: dgam1_gasdt_row
+    double precision dimension(1000) :: dgam1_gasda_row
+    double precision dimension(1000) :: dgam1_gasdz_row
+    double precision dimension(1000) :: gam2_gas_row
+    double precision dimension(1000) :: dgam2_gasdd_row
+    double precision dimension(1000) :: dgam2_gasdt_row
+    double precision dimension(1000) :: dgam2_gasda_row
+    double precision dimension(1000) :: dgam2_gasdz_row
+    double precision dimension(1000) :: gam3_gas_row
+    double precision dimension(1000) :: dgam3_gasdd_row
+    double precision dimension(1000) :: dgam3_gasdt_row
+    double precision dimension(1000) :: dgam3_gasda_row
+    double precision dimension(1000) :: dgam3_gasdz_row
+    double precision dimension(1000) :: nabad_gas_row
+    double precision dimension(1000) :: dnab_gasdd_row
+    double precision dimension(1000) :: dnab_gasdt_row
+    double precision dimension(1000) :: dnab_gasda_row
+    double precision dimension(1000) :: dnab_gasdz_row
+    double precision dimension(1000) :: cs_gas_row
+    double precision dimension(1000) :: dcs_gasdd_row
+    double precision dimension(1000) :: dcs_gasdt_row
+    double precision dimension(1000) :: dcs_gasda_row
+    double precision dimension(1000) :: dcs_gasdz_row
+    double precision dimension(1000) :: etaele_row
+    double precision dimension(1000) :: etapos_row
+    double precision dimension(1000) :: detat_row
+    double precision dimension(1000) :: detad_row
+    double precision dimension(1000) :: detaa_row
+    double precision dimension(1000) :: detaz_row
+    double precision dimension(1000) :: detadd_row
+    double precision dimension(1000) :: detadt_row
+    double precision dimension(1000) :: detada_row
+    double precision dimension(1000) :: detadz_row
+    double precision dimension(1000) :: detatt_row
+    double precision dimension(1000) :: detata_row
+    double precision dimension(1000) :: detatz_row
+    double precision dimension(1000) :: detaaa_row
+    double precision dimension(1000) :: detaaz_row
+    double precision dimension(1000) :: detazz_row
+    double precision dimension(1000) :: egas_row
+    double precision dimension(1000) :: degast_row
+    double precision dimension(1000) :: degasd_row
+    double precision dimension(1000) :: degasa_row
+    double precision dimension(1000) :: degasz_row
+    double precision dimension(1000) :: degasdd_row
+    double precision dimension(1000) :: degasdt_row
+    double precision dimension(1000) :: degasda_row
+    double precision dimension(1000) :: degasdz_row
+    double precision dimension(1000) :: degastt_row
+    double precision dimension(1000) :: degasta_row
+    double precision dimension(1000) :: degastz_row
+    double precision dimension(1000) :: degasaa_row
+    double precision dimension(1000) :: degasaz_row
+    double precision dimension(1000) :: degaszz_row
+    common /thcou/ pcou_row,dpcout_row,dpcoud_row,dpcoua_row,dpcouz_row,ecou_row,decout_row,decoud_row,decoua_row,decouz_row,scou_row,dscout_row,dscoud_row,dscoua_row,dscouz_row,plasg_row
+    common /ptotc1/ ptot_row,dpt_row,dpd_row,dpa_row,dpz_row,dpdd_row,dpdt_row,dpda_row,dpdz_row,dptt_row,dpta_row,dptz_row,dpaa_row,dpaz_row,dpzz_row
+    common /thpion/ pion_row,dpiont_row,dpiond_row,dpiona_row,dpionz_row,dpiondd_row,dpiondt_row,dpionda_row,dpiondz_row,dpiontt_row,dpionta_row,dpiontz_row,dpionaa_row,dpionaz_row,dpionzz_row
+    common /therad/ erad_row,deradt_row,deradd_row,derada_row,deradz_row,deraddd_row,deraddt_row,deradda_row,deraddz_row,deradtt_row,deradta_row,deradtz_row,deradaa_row,deradaz_row,deradzz_row
+    common /thmax/ dse_row,dpe_row,dsp_row
+    common /etotc1/ etot_row,det_row,ded_row,dea_row,dez_row,dedd_row,dedt_row,deda_row,dedz_row,dett_row,deta_row,detz_row,deaa_row,deaz_row,dezz_row
+    common /eosfc1/ eosfail
+    common /th_xni_ion/ xni_row,xnim_row,dxnit_row,dxnid_row,dxnia_row,dxniz_row,dxnidd_row,dxnidt_row,dxnida_row,dxnidz_row,dxnitt_row,dxnita_row,dxnitz_row,dxniaa_row,dxniaz_row,dxnizz_row
+    common /crpc1/ crp_row,dcrpt_row,dcrpd_row,dcrpa_row,dcrpz_row,dcrpdd_row,dcrpdt_row,dcrpda_row,dcrpdz_row,dcrptt_row,dcrpta_row,dcrptz_row,dcrpaa_row,dcrpaz_row,dcrpzz_row
+    common /deedoo/ eoswrk01,eoswrk02,eoswrk03,eoswrk04
+    common /thpepc1/ pele_row,ppos_row,dpept_row,dpepd_row,dpepa_row,dpepz_row,dpepdd_row,dpepdt_row,dpepda_row,dpepdz_row,dpeptt_row,dpepta_row,dpeptz_row,dpepaa_row,dpepaz_row,dpepzz_row
+    common /thdertc2/ gam1_row,dgam1dd_row,dgam1dt_row,dgam1da_row,dgam1dz_row,gam2_row,dgam2dd_row,dgam2dt_row,dgam2da_row,dgam2dz_row,gam3_row,dgam3dd_row,dgam3dt_row,dgam3da_row,dgam3dz_row,nabad_row,dnabdd_row,dnabdt_row,dnabda_row,dnabdz_row,cs_row,dcsdd_row,dcsdt_row,dcsda_row,dcsdz_row
+    common /cmpout2/ xn_row,xp_row,xa_row,xhv_row,xmuhat_row
+    common /thdertc1/ cp_row,dcpdd_row,dcpdt_row,dcpda_row,dcpdz_row,cv_row,dcvdd_row,dcvdt_row,dcvda_row,dcvdz_row
+    common /thsgasc1/ sgas_row,dsgast_row,dsgasd_row,dsgasa_row,dsgasz_row,dsgasdd_row,dsgasdt_row,dsgasda_row,dsgasdz_row,dsgastt_row,dsgasta_row,dsgastz_row,dsgasaa_row,dsgasaz_row,dsgaszz_row
+    common /thsepc1/ sele_row,spos_row,dsept_row,dsepd_row,dsepa_row,dsepz_row,dsepdd_row,dsepdt_row,dsepda_row,dsepdz_row,dseptt_row,dsepta_row,dseptz_row,dsepaa_row,dsepaz_row,dsepzz_row
+    common /thetaion/ etaion_row,detait_row,detaid_row,detaia_row,detaiz_row,detaidd_row,detaidt_row,detaida_row,detaidz_row,detaitt_row,detaita_row,detaitz_row,detaiaa_row,detaiaz_row,detaizz_row
+    common /theion/ eion_row,deiont_row,deiond_row,deiona_row,deionz_row,deiondd_row,deiondt_row,deionda_row,deiondz_row,deiontt_row,deionta_row,deiontz_row,deionaa_row,deionaz_row,deionzz_row
+    common /cmpinp/ xmass_row,aion_row,zion_row,niso
+    common /cmpout/ frac_row
+    common /thpgasc1/ pgas_row,dpgast_row,dpgasd_row,dpgasa_row,dpgasz_row,dpgasdd_row,dpgasdt_row,dpgasda_row,dpgasdz_row,dpgastt_row,dpgasta_row,dpgastz_row,dpgasaa_row,dpgasaz_row,dpgaszz_row
+    common /thsion/ sion_row,dsiont_row,dsiond_row,dsiona_row,dsionz_row,dsiondd_row,dsiondt_row,dsionda_row,dsiondz_row,dsiontt_row,dsionta_row,dsiontz_row,dsionaa_row,dsionaz_row,dsionzz_row
+    common /stotc1/ stot_row,dst_row,dsd_row,dsa_row,dsz_row,dsdd_row,dsdt_row,dsda_row,dsdz_row,dstt_row,dsta_row,dstz_row,dsaa_row,dsaz_row,dszz_row
+    common /eosvec2/ jlo_eos,jhi_eos
+    common /thinp/ temp_row,den_row,abar_row,zbar_row,zeff_row,ye_row
+    common /thxnec1/ xne_row,xnp_row,xnem_row,dxnet_row,dxned_row,dxnea_row,dxnez_row,dxnedd_row,dxnedt_row,dxneda_row,dxnedz_row,dxnett_row,dxneta_row,dxnetz_row,dxneaa_row,dxneaz_row,dxnezz_row
+    common /thprad/ prad_row,dpradt_row,dpradd_row,dprada_row,dpradz_row,dpraddd_row,dpraddt_row,dpradda_row,dpraddz_row,dpradtt_row,dpradta_row,dpradtz_row,dpradaa_row,dpradaz_row,dpradzz_row
+    common /theepc1/ eele_row,epos_row,deept_row,deepd_row,deepa_row,deepz_row,deepdd_row,deepdt_row,deepda_row,deepdz_row,deeptt_row,deepta_row,deeptz_row,deepaa_row,deepaz_row,deepzz_row
+    common /thsrad/ srad_row,dsradt_row,dsradd_row,dsrada_row,dsradz_row,dsraddd_row,dsraddt_row,dsradda_row,dsraddz_row,dsradtt_row,dsradta_row,dsradtz_row,dsradaa_row,dsradaz_row,dsradzz_row
+    common /thdergc1/ cp_gas_row,dcp_gasdd_row,dcp_gasdt_row,dcp_gasda_row,dcp_gasdz_row,cv_gas_row,dcv_gasdd_row,dcv_gasdt_row,dcv_gasda_row,dcv_gasdz_row
+    common /thxip/ pip_row,dpipt_row,dpipd_row,dpipa_row,dpipz_row,eip_row,deipt_row,deipd_row,deipa_row,deipz_row,sip_row,dsipt_row,dsipd_row,dsipa_row,dsipz_row
+    common /thdergc2/ gam1_gas_row,dgam1_gasdd_row,dgam1_gasdt_row,dgam1_gasda_row,dgam1_gasdz_row,gam2_gas_row,dgam2_gasdd_row,dgam2_gasdt_row,dgam2_gasda_row,dgam2_gasdz_row,gam3_gas_row,dgam3_gasdd_row,dgam3_gasdt_row,dgam3_gasda_row,dgam3_gasdz_row,nabad_gas_row,dnab_gasdd_row,dnab_gasdt_row,dnab_gasda_row,dnab_gasdz_row,cs_gas_row,dcs_gasdd_row,dcs_gasdt_row,dcs_gasda_row,dcs_gasdz_row
+    common /etapc1/ etaele_row,etapos_row,detat_row,detad_row,detaa_row,detaz_row,detadd_row,detadt_row,detada_row,detadz_row,detatt_row,detata_row,detatz_row,detaaa_row,detaaz_row,detazz_row
+    common /thegasc2/ egas_row,degast_row,degasd_row,degasa_row,degasz_row,degasdd_row,degasdt_row,degasda_row,degasdz_row,degastt_row,degasta_row,degastz_row,degasaa_row,degasaz_row,degaszz_row
+end subroutine pretty_eos_out
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/
