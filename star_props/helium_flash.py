@@ -3,8 +3,9 @@ import subprocess
 import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
+import scipy.interpolate as interp
 import scipy.integrate as integrate
-
+import pandas as pd
 
 import star_props.integrate as zint
 from star_props import HFDIR        
@@ -139,21 +140,35 @@ class HeliumFlash():
 class HeliumDeflagration():
     matplotlib.rcParams.update({'font.size': 20})
       
-    def __init__(self, rho, tcold, tcrit, thermal_width = 'linear', k=2):
+    def __init__(self, rho, tcold, tcrit=None, thermal_width = 'linear', k=2):
         self.tcold=tcold
         self.rho=rho
-        self.tcrit=tcrit
         self.sigmab = 5.67e-5 #stefan-boltzmann constant
         self.c = 2.99e10 #light in cm/s
         self.k=k
-        width_dict={'linear':self.thermal_width_linear ,'simple':self.thermal_width_simple, 'timmes':self.thermal_width_timmes }
+        
+        if tcrit==None:            
+            self.tcrit=HeliumDeflagration.get_tcrit(self.rho,self.tcold)
+        else:
+            self.tcrit=tcrit
+        
+        width_dict={'linear':self.thermal_width_linear ,'simple':self.thermal_width_simple,
+                    'timmes':self.thermal_width_timmes }           
         try: 
             width_dict[thermal_width]()
             self.trigger_mass()
         except KeyError as e:
             print(e)
             print("options are ", width_dict.keys())
-           
+    
+    
+    @staticmethod        
+    def get_tcrit(rho,tcold):
+        tcrit_data=pd.read_csv(HFDIR+"/star_props/Tcrit.dat")
+        tcrit_data.columns = tcrit_data.columns.str.replace(' ','')
+        tinterp=interp.LinearNDInterpolator(tcrit_data[['rho','Tcold']], tcrit_data['Tcrit'])        
+        return tinterp(rho,tcold)        
+    
     def get_properties(self,temp):
         out= subprocess.check_output([HFDIR+"/star_props/timmes/eosfxt.so", str(temp),str(self.rho)])
         out= map(float, out.strip().split())
