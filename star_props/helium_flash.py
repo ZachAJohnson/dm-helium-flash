@@ -227,8 +227,19 @@ class HeliumDeflagration():
         dksi=0.01 
         dT = self.linear_tprofile(1-dksi)-self.linear_tprofile(1)
         Edot = abs(4*np.pi*self.lambda_t*k*( dT/dksi ))
-        E, error = 4*np.pi*self.rho*self.lambda_t**3*np.array(integrate.quad(lambda ksi:  (ksi**2)*self.get_properties(self.linear_tprofile(ksi))[4] , 0, 1))
+        E, error = 4*np.pi*self.rho*self.lambda_t**3*np.array(integrate.quad(
+            lambda ksi:  (ksi**2)*(self.get_properties(self.linear_tprofile(ksi))[4]-self.get_properties(self.Tcold)[4]) , 0, 1))
         tau = E/Edot
         return tau
     
- 
+    def tau_nuclear(self):
+        T=self.tcrit
+        props= self.get_properties(T)
+        Edot = #np.array(integrate.quad(lambda ksi: ))
+        
+        E, error = 4*np.pi*self.rho*self.lambda_t**3*np.array(integrate.quad(
+            lambda ksi:  (ksi**2)*(self.get_properties(self.linear_tprofile(ksi))[4]-self.get_properties(self.Tcold)[4]) , 0, 1))
+        tau = E/Edot
+        return tau
+    
+    
