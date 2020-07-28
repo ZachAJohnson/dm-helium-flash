@@ -3,6 +3,7 @@ import subprocess
 import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
+import scipy
 import scipy.interpolate as interp
 import scipy.integrate as integrate
 import pandas as pd
@@ -43,10 +44,18 @@ class Star():
         elif r>self.rcore:
             return 1e-2
         else:
-            return pow(10,4.5)
+            return pow(10,5.7) #pow(10,4.5)
 
     def update(self):
         'to implement for scanning purposes'
+
+    def temp(self,r):
+        if r>self.rmax: #outer
+            return 0
+        elif r>self.rcore: #envelope
+            return 0
+        else: # core
+            return pow(10,7.8)    
 
 class DarkMatter():
       
@@ -74,12 +83,12 @@ class HeliumFlash():
     c = 2.9979e10
     matplotlib.rcParams['figure.figsize'] = [15.0, 10.0]
     matplotlib.rcParams.update({'font.size': 22})
-
+    np.set_printoptions(precision=2,suppress=False)
 
     def __init__(self):
         'nothing'
         self.default_m=1e42      
-        self.default_sigma=1e0
+        self.default_sigma=1e5
         self.dm = DarkMatter(self.default_m ,self.default_sigma  , massunit='GeV')
         self.star = Star()
 
@@ -136,6 +145,22 @@ class HeliumFlash():
         ax.set_ylim(-2*self.star.rmax,2*self.star.rmax)
         plt.show()    
 
+    def dEdx(self,yt):
+        r, vr, theta, omega = yt          
+        return self.star.rho(r)*self.dm.sigma*(vr**2 + omega**2*r**2)
+
+    def min_trig(self,yt):
+        r, vr, theta, omega = yt          
+        trig = lambda T: HeliumDeflagration(self.star.rho(r),self.star.temp(r),tcrit = T).trigger()
+        #out = scipy.optimize.minimize(trig,trig(7e8))
+        Temps =np.arange(1e8,1.5e9,1e8)  
+        trigs = [trig(T) for T in Temps]
+        mintrig=min(trigs)
+        return  mintrig 
+
+    def explode(self,yt):
+        rho = self.star.rho(r)
+        return 
 
 class HeliumDeflagration():
     matplotlib.rcParams.update({'font.size': 20})
@@ -166,18 +191,19 @@ class HeliumDeflagration():
     def get_tcrit(rho,tcold):
         tcrit_data=pd.read_csv(HFDIR+"/star_props/Tcrit.dat")
         tcrit_data.columns = tcrit_data.columns.str.replace(' ','')
-        tinterp=interp.LinearNDInterpolator(tcrit_data[['rho','Tcold']], tcrit_data['Tcrit'])        
-        return tinterp(rho,tcold)        
+        tinterp=interp.LinearNDInterpolator(tcrit_data[['rho','Tcold']], tcrit_data['Tcrit']) 
+        tmp=tinterp(rho,tcold)        
+        return tmp   
     
     def get_properties(self,temp):
-        out= subprocess.check_output([HFDIR+"/star_props/timmes/eosfxt.so", str(temp),str(self.rho)])
+        out= subprocess.check_output([HFDIR+"/star_props/timmes/eosfxt.so", str(float(temp)),str(self.rho)])
         out= map(float, out.strip().split())
         pep, eta, xne, ener = out
 
-        out= subprocess.check_output([HFDIR+"/star_props/opac.o",str(temp), str(self.rho), str(pep), str(eta), str(xne)])
+        out= subprocess.check_output([HFDIR+"/star_props/opac.o",str(float(temp)), str(self.rho), str(pep), str(eta), str(xne)])
         opac, orad, ocond, conductivity=  map(float,out.strip().split())
         #print("Testing if conductivity, {0} is related to opacity, {1}".format(conductivity, (16/3.0)*self.sigmab*temp**3/ (self.rho*opac) ))
-        return opac, orad, ocond, conductivity, ener
+        return opac, orad, ocond, conductivity, ener, eta
 
 
     def s3alpha(self,temp):
@@ -201,6 +227,7 @@ class HeliumDeflagration():
         conductivity = self.get_properties(self.tcold)[3] #Not clear where to evaluate, probably at edge of heated region 
         u_der = abs((tprof(self,0.01) - tprof(self,-0.01)) /0.01)
         prof_integral, error = integrate.quad(lambda ksi:  (ksi**self.k)*self.s3alpha(tprof(self,ksi)) , 0, 1)
+        #print("\nu'= ",np.array([u_der]),", k = ", np.array([conductivity]), ", Sdot int = ", np.array([prof_integral]))
         self.lambda_t = np.sqrt(  u_der*conductivity / (self.rho*prof_integral ) )
         return 
 
@@ -228,18 +255,39 @@ class HeliumDeflagration():
         dT = self.linear_tprofile(1-dksi)-self.linear_tprofile(1)
         Edot = abs(4*np.pi*self.lambda_t*k*( dT/dksi ))
         E, error = 4*np.pi*self.rho*self.lambda_t**3*np.array(integrate.quad(
-            lambda ksi:  (ksi**2)*(self.get_properties(self.linear_tprofile(ksi))[4]-self.get_properties(self.Tcold)[4]) , 0, 1))
+            lambda ksi:  (ksi**2)*(self.get_properties(self.linear_tprofile(ksi))[4]-self.get_properties(self.tcold)[4]) , 0, 1))
         tau = E/Edot
         return tau
     
     def tau_nuclear(self):
-        T=self.tcrit
-        props= self.get_properties(T)
-        Edot = #np.array(integrate.quad(lambda ksi: ))
+        #T=self.tcrit
+        #props= self.get_properties(T)
+        T = lambda ksi: self.linear_tprofile(ksi)
+        Eperg = lambda T: self.get_properties(T)[4]
+        EpergCold = self.get_properties(self.tcold)[4]
+        Edot, error = (4*np.pi)*(self.lambda_t**3)*self.rho*np.array(integrate.quad(
+            lambda ksi: (ksi**2)*self.s3alpha(T(ksi)),0,1))
         
-        E, error = 4*np.pi*self.rho*self.lambda_t**3*np.array(integrate.quad(
-            lambda ksi:  (ksi**2)*(self.get_properties(self.linear_tprofile(ksi))[4]-self.get_properties(self.Tcold)[4]) , 0, 1))
+        print("At Tcrit: ",np.array([self.tcrit]),'\n E/s: ', np.array([Edot]))      
+        print("Using M_trigger = ", np.array([self.mtrig]) )  
+        E, error = (4*np.pi)*self.rho*(self.lambda_t**3)*np.array(integrate.quad(
+            lambda ksi:  (ksi**2)*(Eperg(T(ksi))-EpergCold) , 0, 1))
+        print("E: ", E)
+        print("Average E/g/s: ", np.array([E/self.mtrig/self.tau_diffusion()]))
+        print("lambda = ", self.lambda_t, " cm")
         tau = E/Edot
         return tau
+
+    def E_trigger(self):
+        T = lambda ksi: self.linear_tprofile(ksi)
+        Eperg = lambda T: self.get_properties(T)[4]
+        EpergCold = self.get_properties(self.tcold)[4]
+        E, error = (4*np.pi)*self.rho*(self.lambda_t**3)*np.array(integrate.quad(
+            lambda ksi:  (ksi**2)*(Eperg(T(ksi))-EpergCold) , 0, 1))
+        self.Etrig = E
+        return E
     
+    def trigger(self):
+        print("Etrig = ",np.array([self.E_trigger()]), ", lambda = ", np.array([self.lambda_t]),", M = ",np.array([self.mtrig]))
+        return self.E_trigger()/self.lambda_t
     
