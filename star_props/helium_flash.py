@@ -1,7 +1,7 @@
 import subprocess 
 
-import matplotlib.pyplot as plt
-import matplotlib
+#import matplotlib.pyplot as plt
+#import matplotlib
 import numpy as np
 import scipy
 import scipy.interpolate as interp
@@ -16,7 +16,6 @@ from star_props import HFDIR
 
 GN = 6.674e-8
 
-
 class Star():
     def __init__(self, mass=1.3):#,stellar_mass, stellar_composition= (0,1,0),):# extend to more general compositions than x,y,z?
         #gen_profiles()
@@ -25,12 +24,12 @@ class Star():
         self.msol=1.98844e33 #solar mass in grams
         #self.rcore=0.021*self.rsol
         #self.rmax=4.811*self.rsol
-        self.folder='../data/1.3_solar_mass/'
-        self.gen_profiles(self.folder)
+        self.folder='/home/zajohns/dm-helium-flash/data/1.3_solar_mass/'
+        self.gen_profiles()
         self.age = 0 #Changed for every new trajectory
         self.age_index = 0 #Changed for every new trajectory
       
-    def gen_profiles(self, folder): #Generates profile of some specific star from MESA data
+    def gen_profiles(self): #Generates profile of some specific star from MESA data
         files = {'T':'temperature_K.npy', 'age': 'stellar_age_yrs.npy', 'r': 'radius_cm.npy',
          's3':'nuclear_triple_alpha_erg_s.npy','cs': 'sound_speed_cm_s.npy',
          'eta':'degeneracy.npy','rho':'density_g_cm3.npy', 'cell':'cell_width_cm.npy',
@@ -40,11 +39,14 @@ class Star():
         for key, val in files.items():
             datas[key] = np.load(self.folder + val, allow_pickle=True, encoding='latin1') 
         
+        print(len(datas['r']))
+
         rmaxs=[prof[0] for prof in datas['r']]
         s3max=[max(prof) for prof in datas['s3'] ]
         eta = [max(prof) for prof in datas['eta']]
         flashindex=int(np.where(max(s3max)==s3max  )[0])
         flashtime=datas['age'][flashindex]
+        print(flashtime)
 
         start_eta = 4
         start = np.where(np.array(eta)>start_eta)[0][2]
@@ -52,28 +54,18 @@ class Star():
         starttime=datas['age'][start]
         endtime=datas['age'][end]
         print("Valid times between where eta > {0}, at time {1} Gyr, and where helium flash occurs at {2} Gyr".format(start_eta,starttime/1e9,endtime/1e9))
-        #print(datas['cell'][0][-3:-1])
-        #print(datas['r'][0][-3:-1])
-        #print(np.array([sum(datas['cell'][]) -max(datas['r'][1]) ]))
-        #print((datas['r'][0][-i-2]-datas['r'][0][-i-1])/datas['cell'][0][-i-2])
-        #print("max error is:", max([abs((datas['r'][0][-i-2]-datas['r'][0][-i-1])/datas['cell'][0][-i-2]-1) for i in range(len(datas['cell'][0])-1) ]))
-        #print(datas['cell'][0][-10:-1],'\n',datas['r'][0][-10:-1])
-
-
         
-
         self.frmax = interp1d(datas['age'],rmaxs )
 
         for key in files.keys():  #shortens time scale to only what is relevant
             datas[key] = datas[key][start : end]
-        points=[]
-        #yrarray=[]
+        #points=[]
         for ti in range(end-start):
             t=datas['age'][ti]
             for ri in range(len(datas['r'][ti])): 
                 r=datas['r'][ti][ri]
                 #yrarray.append(t)
-                points.append([t,r])
+                #points.append([t,r])
 
         self.rdata=datas['r']
         self.agedata=datas['age']
@@ -82,7 +74,6 @@ class Star():
         self.Tdata = datas['T']
         self.Xdata = datas['X']
         self.Ydata = datas['Y']
-
 
         #Now making mass as a function of radius, density
         self.mdata=[]
@@ -96,32 +87,60 @@ class Star():
             rev_m[0]=0 #Crucial! Gotta avoid that 1/r^2 divergence....
             self.mdata.append(np.flip(rev_m))
 
-        #self.yrarray=yrarray
-        self.rarray=np.concatenate(datas['r'])
-        #self.marray=np.concatenate(self.mdata)
-        self.points=points
-        self.Tarray=np.concatenate(datas['T'])
-        self.rhoarray=np.concatenate(datas['rho'])        
+        #Now create a A**4 weighted array of elements
+        light_species_names = ['h1', 'he3', 'he4', 'c12', 'n14', 'o16']#, 'ne20', 'na23', \
+        #'mg24', 'mg25', 'mg26', 'al27', 'si28', 'p31', 's32', 'cl35', \
+        # 'cl37', 'ar40', 'k39', 'k41', 'ca40', 'sc45', 'ti48', 'v51', \
+        # 'cr50', 'cr52', 'cr53', 'cr54', 'fe54', 'fe56', 'co59', 'ni58', \
+        # 'ni60']
+        light_species_files=["log_abundance_" + species + ".npy" for species in light_species_names]
+        light_species_datas = {}
+        light_atomic_numbers = np.array([1,3,4,12,14,16])#,20,23,24,25,26,27,28,31,32,35,37,40,39,41,\
+        #                           40,45,48,51,50,52,53,54,54,56,59,58,60])
 
-        self.set_age(starttime)
+        heavy_el_data= np.load('/home/zajohns/dm-helium-flash/data/mass_fractions_solar_metallicity.npz', allow_pickle=True, encoding='latin1')
+        heavy_el_A = heavy_el_data['A']    
+        heavy_el_dict= heavy_el_data['log10_mass_fraction'].item(0)
+        light_keys=['log_{0}'.format(name) for name in ['h1','h2','he3','he4','li7','be7','be9','be10','b8','c12','c13',
+                                                        'n13','n14','n15','o14','o15','o16','o17','o18','f17','f18',
+                                                        'f19','ne18','ne19']]
+        for key in light_keys:
+            heavy_el_dict.pop(key)
+        #print("heavy keys are:",[k for k in heavy_el_dict.keys()])
+        weight_heavy_A4=[]
+        eff_heavy_Z=0
+        for k,v in heavy_el_dict.items():
+            A=int(k[-2:]) # only works for two digit A species data
+            weight_heavy_A4.append( 10**v*A**4) #av weighted by A^4
+            #print(k,10**v*A**4)
+            eff_heavy_Z+=10**v
+        weight_heavy_A4=sum(weight_heavy_A4)
+        #print(weight_heavy_A4)
+        eff_heavy_A=(weight_heavy_A4/eff_heavy_Z)**0.25
+        #print(eff_heavy_A,eff_heavy_Z)    
 
-        print("Loaded all arrays")
+        self.weight_lightA4_data = np.array(np.load(self.folder + light_species_files[0], allow_pickle=True, encoding='latin1')[start : end])*light_atomic_numbers[0]**4
+        self.eff_A4_data = (self.weight_lightA4_data + eff_heavy_Z*eff_heavy_A**4 ) #trick to get correct size array
+        for i in range(1,len(light_species_names)):
+            self.eff_A4_data+= np.array(np.load(self.folder + light_species_files[i] , allow_pickle=True, encoding='latin1')[start : end])*light_atomic_numbers[i]**4 
 
-        # rlin=np.geomspace(1e3,max(rarray),num=1000)
-        # yrlin=np.geomspace(starttime,endtime,num=1000)
+        #Quick chek X+Y+Z=1 !
+        check=0
+        for i in range(0,len(light_species_names)):
+            check+= np.array(np.load(self.folder + light_species_files[i] , allow_pickle=True, encoding='latin1')[start : end])
+        print("Check that X+Y+Z=1, we get min {0}, and max {1}".format(min([min(c) for c in (check + eff_heavy_Z)]),
+        max([max(c) for c in (check + eff_heavy_Z)]) ))#, max(check + eff_heavy_Z) ))
 
-        # self.LOGR, self.LOGYR = np.meshgrid(np.log10(rlin),np.log10(yrlin))
-        # INSTAR = self.LOGR<np.log10(rmax(self.LOGYR))
-
-        # T = griddata((np.log10(rarray),np.log10(yrarray)),Tarray,(self.LOGR,self.
-        #     LOGYR) ,method='nearest',rescale=True)
-        # RHO = griddata((np.log10(rarray),np.log10(yrarray)),rhoarray,(self.LOGR,self.LOGYR) ,method='nearest',rescale=True)
         
-        # self.T = np.where(INSTAR,T,0) #Kills values outside star
-        # self.RHO = np.where(INSTAR,RHO,0) #Kills values outside star
-
+        self.set_age(starttime)
+        print("Loaded all star arrays")
         return 
-    
+
+    def av_A(self,r):
+        nearest_index=np.array(abs(self.rdata[self.age_index]-r)).argmin() 
+        A_nearest=pow(self.eff_A4_data[self.age_index][nearest_index],0.25)
+        return A_nearest
+
     def set_age(self,age):
         self.age= age
         self.age_index=(abs(np.array(self.agedata)-age)).argmin()
@@ -145,7 +164,10 @@ class Star():
 
     def rho(self, r):
         nearest_index=np.array(abs(self.rdata[self.age_index]-r)).argmin() 
-        rho_nearest=self.rhodata[self.age_index][nearest_index]
+        if r < self.now_rmax:
+            rho_nearest=self.rhodata[self.age_index][nearest_index]
+        else:
+            rho_nearest=0
         return rho_nearest
 
     def temp(self, r):
@@ -158,32 +180,7 @@ class Star():
         X_nearest = self.Xdata[self.age_index][nearest_index]
         Y_nearest = self.Ydata[self.age_index][nearest_index]
         return X_nearest, Y_nearest
-
-    def set_trigger(self):
-        #def min_trig(self,yt):
-        #r, vr, theta, omega = yt
-        #nearest_index = np.array(abs(self.rdata[self.age_index]-r)).argmin()     
-        #rho = self.rho(r)  
-        #temp = self.temp(r)    
-        Temps = np.arange(1.0e8,1.5e9,3.0e8)  
-        Temps = np.array([7.0e8])      
-
-        self.mintrigdata=[]
-        for ir in range(len(self.rdata[self.age_index])) :            
-            if self.rdata[self.age_index][ir] > self.now_rcore:
-                self.mintrigdata.append(1e100)
-            else:
-                rho = self.rhodata[self.age_index][ir]
-                tcold = self.Tdata[self.age_index][ir]
-                trig = lambda T: HeliumDeflagration(rho,tcold,tcrit = T).trigger()
-                trigs = [trig(T) for T in Temps]
-                self.mintrigdata.append(min(trigs))
-
-    def mintrig(self,r):
-        nearest_index = np.array(abs(self.rdata[self.age_index]-r)).argmin() 
-        mintrig_nearest = self.mintrigdata[nearest_index]
-        return mintrig_nearest
-        
+ 
 
     def update(self):
         'to implement for scanning purposes'
@@ -198,7 +195,7 @@ class DarkMatter():
             self.mg =  self.mgev*self.gev2g
         elif massunit.lower()=='g' or massunit.lower()=='gram':
             self.mg= mass
-            self.mgev =  self.mgev/gev2g
+            self.mgev =  self.mg/self.gev2g
         else:
             print("Error: improper massunit declaration.")          
 
@@ -217,25 +214,33 @@ class HeliumFlash():
     Rsol2cm = 6.957e10
     Msol2g = 1.989e33
 
-    matplotlib.rcParams['figure.figsize'] = [15.0, 10.0]
-    matplotlib.rcParams.update({'font.size': 22})
+    #matplotlib.rcParams['figure.figsize'] = [15.0, 10.0]
+    #matplotlib.rcParams.update({'font.size': 22})
     np.set_printoptions(precision=2,suppress=False)
 
-    def __init__(self, dm, star):
+    width_files = {'linear':'lin_trig.npy'}
+
+    def __init__(self, dm, star,thermal_width='linear'):
         'nothing'
         self.dm = dm
         self.star = star
         self.incore=False
         self.instar=False
-        self.av_A = lambda r: pow(sum(np.array(self.star.comp(r)) * np.array([1,4])**4), 0.25)
+        self.thermal_width=thermal_width
+
+        self.data_folder='/home/zajohns/dm-helium-flash/data/1.3_solar_mass/' 
+        rhos, tcolds, E_trig, lambda_t = np.load(self.data_folder + self.width_files[self.thermal_width],allow_pickle=True, encoding='latin1' )
+
+        self.flogE = interp.interp2d(np.log10(rhos),np.log10(tcolds),np.log10(E_trig),kind='quintic',bounds_error=False, fill_value=100)
+        self.flogWt = interp.interp2d(np.log10(rhos),np.log10(tcolds),np.log10(lambda_t),kind='quintic',bounds_error=False, fill_value=100)
+        
 
     def update( self, mass = None): 
         'implement later'
 
     def f(self,t, yt): #yt= [r,vr,theta,omega]          
         r, vr, theta, omega = yt          
-        Fr, Ftheta = -self.star.rho(r)*self.dm.sigmaA(self.av_A(r))*np.sqrt(vr**2 + r**2 * omega**2)*np.array([vr, r*omega])
-
+        Fr, Ftheta = -self.star.rho(r)*self.dm.sigmaA(self.star.av_A(r))*np.sqrt(vr**2 + r**2 * omega**2)*np.array([vr, r*omega])
         if self.star.rho(r)<1e3:
             self.incore=False
         elif self.incore == False: 
@@ -252,11 +257,10 @@ class HeliumFlash():
         f2 = Fr/self.dm.mg-GN*self.star.M(r) / r**2 + r*omega**2
         f3 = omega
         f4 = Ftheta/(self.dm.mg*r)-2*vr*omega/r
-        
         return np.array([f1,f2,f3,f4])
 
 
-    def trajectory(self, gamma, y0 ): #gamma is incoming DM angle in DM coordinates
+    def trajectory(self, gamma, y0, calc_flash=True ): #gamma is incoming DM angle in DM coordinates
         #np.set_printoptions(precision=3,suppress=True)        
         r0,vr0,theta0,omega0 = y0
         v0=np.sqrt(vr0**2 + r0**2*omega0**2)
@@ -269,8 +273,9 @@ class HeliumFlash():
         y_data=[y]
         not_stopped=True
         hit_core=False
+        ignited=False
         n=0
-        while y[0]<r0+1 and not_stopped and n<1e5:     
+        while y[0]<r0+1 and not_stopped and n<1e4:     
             k1 = dt*self.f(t,      y)
             k2 = dt*self.f(t+dt/2, y + k1/2 )
             k3 = dt*self.f(t+dt/2, y + k2/2 )
@@ -279,43 +284,69 @@ class HeliumFlash():
             dy = (k1 + 2*(k1+k3) + k4)/6.0
 
             v=np.sqrt(y[1]**2 + y[0]**2*y[3]**2)
-            print("r is {0}, and v is {1}".format(y[0]/self.star.now_rcore,v/self.c),end='\r')
+            
 
-            too_big= [abs(dy[i])>0.001*abs(y[i]) and abs(y[i]>1e-7) for i in range(0,size)]
-            too_small= [abs(dy[i])<1e-3*abs(y[i]) for i in range(size)]
+            precision=1e-1
+            too_big= [abs(dy[i])>precision*abs(y[i]) for i in (1,3)]#range(0,size)]
+            too_small= [abs(dy[i])<precision*abs(y[i]) for i in (1,3)]#range(size)]
+
+            #if abs(y[0])<100*self.star.now_rcore:
+            #print("r is {0}, and v is {1}".format(y[0]/self.star.now_rcore,v/self.c),end='\n')
 
             if any(too_big):
                 dt=dt/2
-                #print("Decreasing stepsize- ", too_big, n, y[0])
-            elif all(too_small):
-                dt=2*dt
+                #print("Decreasing stepsize, recalculating- ", too_big, n, y)
+            #elif all(too_small):
+            #    dt=2*dt
                 #print("Increasing stepsize- ", too_small)
             else:                                  
                 y += dy
                 t += dt
+                if y[0]<0:
+                    #print("Passed straight through core at v:", y[1]/self.c)
+                    ignited=False
+                    break
+                    #y[0]=-y[0]
+                    #y[1]=-y[1]
+                    #y[2]+=np.pi
+                    #y[3]=y[3]
+
                 t_data.append(t)                                                        
                 y_data.append(list(y))
                 n+=1
-            if v**2/v0**2 < 0.001: #Dm roughly stopped if KE/KE_0 <1%
+                #print(n)
+                if all(too_small):
+                    dt=2*dt
+                    #print("Increasing stepsize for next time- ", too_small)
+
+            v_5mag = np.sqrt(1.5*8.3145e7*self.star.temp(y[0])/(24*1) ) # R=8.3145e7 ergs/K mol, 24=A of magnesium, 1 is 1 gram/mol
+            if v < v_5mag: #Dm considered stopped if slower than other particles. Here I take the cutoff to be ~ 5x the velocity of magnesium at given T
+                #print("Final r is:", y[0]/self.star.now_rcore)
                 not_stopped=False
+
 
             #rho_new = self.star.rho(y[0])
             if y[0]<self.star.now_rcore:# and rho_new != rho_old:
-                #hit_core=True
-                #return True
-                #self.t_data=np.array(t_data)
-                #self.y_data=np.array(y_data)
-    
-                
-                min_trig = self.star.mintrig(y[0])
-                print("v = {0}, KE/KE_0 = {1}".format(v/self.c, v**2/v0**2 ), "dEdx = ",self.dEdx(y)," and minimum needed is: ", min_trig,'\n',end='\r')
-                if self.dEdx(y) > min_trig:
-                    return hit_core, True
+                #if hit_core==False:
+                    #print("Hit outer core at v:", y[1]/self.c)
+
+                hit_core=True
+                if calc_flash==False:
+                    break
+                else:                
+                    min_trig = self.mintrig(y[0])
+                    #print("v = {0}, KE/KE_0 = {1}".format(v/self.c, v**2/v0**2 ), "dEdx = ",self.dEdx(y)," and minimum needed is: ", min_trig,'\n',end='\r')
+                    if self.dEdx(y) > min_trig:
+                        ignited=True
+                        break 
             rho_old = self.star.rho(y[0])
 
         self.t_data=np.array(t_data)
         self.y_data=np.array(y_data)
-        return hit_core, False
+        if calc_flash==False:
+            return hit_core #Did not hit core
+        else:
+            return hit_core, ignited
 
     def plot_traj(self,t_data, y_data, r1,r2):
         plot_ydata = y_data[:,0]*np.cos(y_data[::,2])
@@ -346,18 +377,47 @@ class HeliumFlash():
         ax2.set_ylim(y2range)
         plt.show()  
         
+    @classmethod
+    def set_trigger(cls,overwrite=False,thermal_width='linear'):
+        print("Computing trigger size grid for later interpolation")
+        width_files = {'linear':'lin_trig.npy','timmes':'timmes.npy'}
+        if overwrite==True:
+            rhos = np.geomspace(1e3,1e7,num=20)
+            tcolds = np.geomspace(1e4,1e9,num=20)
+            R,T = np.meshgrid(rhos,tcolds)
+            T = 7.0e8
+            trig = lambda rho, tcold: HeliumDeflagration(rho,tcold,tcrit = T).trigger()
+            trig = np.vectorize(trig)
+            E_trig, lambda_t = trig(R,T)
+            np.save( self.data_folder + HeliumFlash.width_files[thermal_width], [rhos,tcolds,E_trig.reshape(len(rhos)**2),lambda_t.reshape(len(rhos)**2)])
 
+
+    def mintrig(self,r,thermal_width='linear'):       
+        nearest_index = np.array(abs(self.star.rdata[self.star.age_index]-r)).argmin() 
+        t_nearest = self.star.temp(r)
+        rho_nearest = self.star.rho(r)
+        Etrig_approx = pow(10,self.flogE(np.log10(rho_nearest), np.log10(t_nearest)) )
+        Wt_approx= pow(10,self.flogWt(np.log10(rho_nearest), np.log10(t_nearest)) )
+        sigma= self.dm.sigmaA(self.star.av_A(r))
+        #if  sigma <= Wt_approx**2:
+        dEdxMIN=Etrig_approx/Wt_approx         
+        #    print("Below")   
+        #else:
+        #    dEdxMIN=Etrig_approx*sigma/Wt_approx**3
+        #    print("Above ==> shrunk by sigma/Wt^2 = {0}".format(sigma/Wt_approx**2))
+        #print("At rho={0}, Tcold={1}, Etrig={2}, and lambda={3}".format(rho_nearest,t_nearest,Etrig_approx,Wt_approx)) 
+        return dEdxMIN
 
     def dEdx(self,yt):
-        r, vr, theta, omega = yt          
-        return self.star.rho(r)*self.dm.sigmaA(self.av_A(r))*(vr**2 + omega**2*r**2)
+        r, vr, theta, omega = yt        
+        return self.star.rho(r)*self.dm.sigmaA(self.star.av_A(r))*(vr**2 + omega**2*r**2)
 
     #def explode(self,yt):
     #    rho = self.star.rho(r)
     #    return 
 
 class HeliumDeflagration():
-    matplotlib.rcParams.update({'font.size': 20})
+    #matplotlib.rcParams.update({'font.size': 20})
       
     def __init__(self, rho, tcold, tcrit=None, thermal_width = 'linear', k=2):
         self.tcold=tcold
@@ -405,6 +465,10 @@ class HeliumDeflagration():
         rate=5.1e8*self.rho**2*(1/t9)**3*np.exp(-4.4027/t9)
         return rate
 
+    # def SCO(self,temp):
+    #     t9=temp/10**9
+    #     rate=1.5e25*self.rho#unfinisheds
+
     def linear_tprofile(self, ksi, a=5/3., **kwargs): #ksi = r/lambda_t, so distance from center of thermal region to edge
         tmax = a*self.tcrit             
         temp = tmax - ksi*(tmax - self.tcold)
@@ -428,6 +492,7 @@ class HeliumDeflagration():
     def thermal_width_timmes(self):
         #props = self.get_properties(self.tcrit)
         opac  = self.get_properties(self.tcrit)[0]
+        #opac  = self.get_properties(self.tcold)[0]
         eperg = self.get_properties(self.tcrit)[4]-self.get_properties(self.tcold)[4]
         self.lambda_t = np.sqrt(self.c * eperg/(opac*self.rho*self.s3alpha(self.tcrit) )  )
         return 
@@ -462,13 +527,13 @@ class HeliumDeflagration():
         Edot, error = (4*np.pi)*(self.lambda_t**3)*self.rho*np.array(integrate.quad(
             lambda ksi: (ksi**2)*self.s3alpha(T(ksi)),0,1))
         
-        print("At Tcrit: ",np.array([self.tcrit]),'\n E/s: ', np.array([Edot]))      
-        print("Using M_trigger = ", np.array([self.mtrig]) )  
+        #print("At Tcrit: ",np.array([self.tcrit]),'\n E/s: ', np.array([Edot]))      
+        #print("Using M_trigger = ", np.array([self.mtrig]) )  
         E, error = (4*np.pi)*self.rho*(self.lambda_t**3)*np.array(integrate.quad(
             lambda ksi:  (ksi**2)*(Eperg(T(ksi))-EpergCold) , 0, 1))
-        print("E: ", E)
-        print("Average E/g/s: ", np.array([E/self.mtrig/self.tau_diffusion()]))
-        print("lambda = ", self.lambda_t, " cm")
+        #print("E: ", E)
+        #print("Average E/g/s: ", np.array([E/self.mtrig/self.tau_diffusion()]))
+        #print("lambda = ", self.lambda_t, " cm")
         tau = E/Edot
         return tau
 
@@ -482,7 +547,9 @@ class HeliumDeflagration():
         return E
     
     def trigger(self):
-        print("for rho={0}, t_cold = {1}, t_crit = {2} ".format(self.rho, self.tcold, self.tcrit))
-        print("Etrig = ",np.array([self.E_trigger()]), ", lambda = ", np.array([self.lambda_t]),", M = ",np.array([self.mtrig]))
-        return self.E_trigger()/self.lambda_t
+        #print("for rho={0}, t_cold = {1}, t_crit = {2} ".format(self.rho, self.tcold, self.tcrit))
+        #print("Etrig = ",np.array([self.E_trigger()]), ", lambda = ", np.array([self.lambda_t]),", M = ",np.array([self.mtrig]))
+        Etrig=self.E_trigger()
+        Wt=self.lambda_t
+        return Etrig, Wt
     
