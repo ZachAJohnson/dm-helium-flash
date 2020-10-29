@@ -1,6 +1,6 @@
 import subprocess 
 
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 #import matplotlib
 import numpy as np
 import scipy
@@ -10,6 +10,8 @@ from scipy.interpolate import NearestNDInterpolator
 from scipy.interpolate import interp1d
 from scipy.interpolate import griddata
 import pandas as pd
+import re
+
 
 import star_props.integrate as zint
 from star_props import HFDIR        
@@ -17,14 +19,14 @@ from star_props import HFDIR
 GN = 6.674e-8
 
 class Star():
-    def __init__(self, mass=1.3):#,stellar_mass, stellar_composition= (0,1,0),):# extend to more general compositions than x,y,z?
+    def __init__(self, folder, mass=1.3):#,stellar_mass, stellar_composition= (0,1,0),):# extend to more general compositions than x,y,z?
         #gen_profiles()
         'do nothing'
         self.rsol=6.957e10 #solar radius in cm
         self.msol=1.98844e33 #solar mass in grams
         #self.rcore=0.021*self.rsol
         #self.rmax=4.811*self.rsol
-        self.folder='/home/zajohns/dm-helium-flash/data/1.3_solar_mass/'
+        self.folder=folder#'/home/zajohns/dm-helium-flash/data/1.3_solar_mass/'
         self.gen_profiles()
         self.age = 0 #Changed for every new trajectory
         self.age_index = 0 #Changed for every new trajectory
@@ -33,7 +35,7 @@ class Star():
         files = {'T':'temperature_K.npy', 'age': 'stellar_age_yrs.npy', 'r': 'radius_cm.npy',
          's3':'nuclear_triple_alpha_erg_s.npy','cs': 'sound_speed_cm_s.npy',
          'eta':'degeneracy.npy','rho':'density_g_cm3.npy', 'cell':'cell_width_cm.npy',
-         'Y':'helium_fraction_Y.npy', 'X': 'hydrogen_fraction_X.npy'}
+         'Y':'abundance_he4.npy', 'X': 'abundance_h1.npy'}
 
         datas = {}
         for key, val in files.items():
@@ -88,58 +90,28 @@ class Star():
             self.mdata.append(np.flip(rev_m))
 
         #Now create a A**4 weighted array of elements
-        light_species_names = ['h1', 'he3', 'he4', 'c12', 'n14', 'o16']#, 'ne20', 'na23', \
-        #'mg24', 'mg25', 'mg26', 'al27', 'si28', 'p31', 's32', 'cl35', \
-        # 'cl37', 'ar40', 'k39', 'k41', 'ca40', 'sc45', 'ti48', 'v51', \
-        # 'cr50', 'cr52', 'cr53', 'cr54', 'fe54', 'fe56', 'co59', 'ni58', \
-        # 'ni60']
-        light_species_files=["log_abundance_" + species + ".npy" for species in light_species_names]
-        light_species_datas = {}
-        light_atomic_numbers = np.array([1,3,4,12,14,16])#,20,23,24,25,26,27,28,31,32,35,37,40,39,41,\
-        #                           40,45,48,51,50,52,53,54,54,56,59,58,60])
-
-        heavy_el_data= np.load('/home/zajohns/dm-helium-flash/data/mass_fractions_solar_metallicity.npz', allow_pickle=True, encoding='latin1')
-        heavy_el_A = heavy_el_data['A']    
-        heavy_el_dict= heavy_el_data['log10_mass_fraction'].item(0)
-        light_keys=['log_{0}'.format(name) for name in ['h1','h2','he3','he4','li7','be7','be9','be10','b8','c12','c13',
-                                                        'n13','n14','n15','o14','o15','o16','o17','o18','f17','f18',
-                                                        'f19','ne18','ne19']]
-        for key in light_keys:
-            heavy_el_dict.pop(key)
-        #print("heavy keys are:",[k for k in heavy_el_dict.keys()])
-        weight_heavy_A4=[]
-        eff_heavy_Z=0
-        for k,v in heavy_el_dict.items():
-            A=int(k[-2:]) # only works for two digit A species data
-            weight_heavy_A4.append( 10**v*A**4) #av weighted by A^4
-            #print(k,10**v*A**4)
-            eff_heavy_Z+=10**v
-        weight_heavy_A4=sum(weight_heavy_A4)
-        #print(weight_heavy_A4)
-        eff_heavy_A=(weight_heavy_A4/eff_heavy_Z)**0.25
-        #print(eff_heavy_A,eff_heavy_Z)    
-
-        self.weight_lightA4_data = np.array(np.load(self.folder + light_species_files[0], allow_pickle=True, encoding='latin1')[start : end])*light_atomic_numbers[0]**4
-        self.eff_A4_data = (self.weight_lightA4_data + eff_heavy_Z*eff_heavy_A**4 ) #trick to get correct size array
-        for i in range(1,len(light_species_names)):
-            self.eff_A4_data+= np.array(np.load(self.folder + light_species_files[i] , allow_pickle=True, encoding='latin1')[start : end])*light_atomic_numbers[i]**4 
-
-        #Quick chek X+Y+Z=1 !
-        check=0
-        for i in range(0,len(light_species_names)):
-            check+= np.array(np.load(self.folder + light_species_files[i] , allow_pickle=True, encoding='latin1')[start : end])
-        print("Check that X+Y+Z=1, we get min {0}, and max {1}".format(min([min(c) for c in (check + eff_heavy_Z)]),
-        max([max(c) for c in (check + eff_heavy_Z)]) ))#, max(check + eff_heavy_Z) ))
-
+        raw_el_data= np.loadtxt(self.folder+"iso_data_FeH_neg2p1.dat",dtype=str)
+        el_data = [ [int(re.sub("[^0-9]","",A)),float(Zi)] for A, Zi in raw_el_data ]
+        weightedA4_el_data=[Zi*A**4 for A,Zi in el_data]
+        weightedA4=sum(weightedA4_el_data)
+        print("Check all elements there, or that 1=",sum([Zi for A,Zi in el_data]))
+        print("Weighted A4 is {0}, and effective_A is {1}".format(weightedA4,weightedA4**.25))
+        self.weightedA4=weightedA4
         
         self.set_age(starttime)
         print("Loaded all star arrays")
         return 
 
-    def av_A(self,r):
+
+    def Y(self,r):
         nearest_index=np.array(abs(self.rdata[self.age_index]-r)).argmin() 
-        A_nearest=pow(self.eff_A4_data[self.age_index][nearest_index],0.25)
-        return A_nearest
+        nearest_Y = self.Ydata[self.age_index][nearest_index]
+        return nearest_Y
+
+    def av_A(self,r):
+        #nearest_index=np.array(abs(self.rdata[self.age_index]-r)).argmin() 
+        #A_nearest=pow(self.eff_A4_data[self.age_index][nearest_index],0.25)
+        return self.weightedA4**0.25
 
     def set_age(self,age):
         self.age= age
@@ -206,7 +178,7 @@ class DarkMatter():
         'to implement for scanning mass, sigma'
 
     def sigmaA(self, A):
-        return self.sigman*0.1*A**4
+        return self.sigman*A**4 #Weird Helm form factor, work for helium?
         
 
 class HeliumFlash():
@@ -286,7 +258,7 @@ class HeliumFlash():
             v=np.sqrt(y[1]**2 + y[0]**2*y[3]**2)
             
 
-            precision=1e-1
+            precision=1e-2
             too_big= [abs(dy[i])>precision*abs(y[i]) for i in (1,3)]#range(0,size)]
             too_small= [abs(dy[i])<precision*abs(y[i]) for i in (1,3)]#range(size)]
 
@@ -396,8 +368,8 @@ class HeliumFlash():
         nearest_index = np.array(abs(self.star.rdata[self.star.age_index]-r)).argmin() 
         t_nearest = self.star.temp(r)
         rho_nearest = self.star.rho(r)
-        Etrig_approx = pow(10,self.flogE(np.log10(rho_nearest), np.log10(t_nearest)) )
-        Wt_approx= pow(10,self.flogWt(np.log10(rho_nearest), np.log10(t_nearest)) )
+        Etrig_approx = (self.star.Y(r)**-4.5)*pow(10,self.flogE(np.log10(rho_nearest), np.log10(t_nearest)) )#Corrected for Y not 1, does not correct for energy density change
+        Wt_approx= (self.star.Y(r)**-1.5)*pow(10,self.flogWt(np.log10(rho_nearest), np.log10(t_nearest)) )#Corrected for Y not 1
         sigma= self.dm.sigmaA(self.star.av_A(r))
         #if  sigma <= Wt_approx**2:
         dEdxMIN=Etrig_approx/Wt_approx         

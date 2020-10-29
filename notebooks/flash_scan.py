@@ -15,8 +15,10 @@ GN = 6.674e-8
 rsol=6.957e10 #solar radius in cm
 c = 2.9979e10
 
-#Create 1.3 mass star, data arrays
-star=Star()
+
+star_folder='/home/zajohns/dm-helium-flash/data/0.790_solar_mass/'
+
+star=Star(star_folder)
 rho_core_data=[rho_array[-1] for rho_array in star.rhodata]
 rho_sample = np.geomspace(min(rho_core_data),max(rho_core_data),num=10)
 index_sample=[np.argmin(abs(rho-rho_core_data)) for rho in rho_sample]
@@ -66,6 +68,6 @@ for info in PartScan:
 	old_age=age
 	print(traj,'\n')
 
-savefile='/home/zajohns/dm-helium-flash/data/1.3_solar_mass/flash_scan-{0}.npy'.format(piece)
+savefile='/home/zajohns/dm-helium-flash/data/0.790_solar_mass/flash_scan-{0}.npy'.format(piece)
 np.save(savefile,trajectory_output)
 
